@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import {
   ClerkProvider,
@@ -22,6 +22,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "HabitFlow",
   description: "A production-grade app to track tasks, habits, and recurring goals.",
+  manifest: "/manifest.json",
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "HabitFlow",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#09090b",
 };
 
 export default function RootLayout({
