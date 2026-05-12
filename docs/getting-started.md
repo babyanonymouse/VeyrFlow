@@ -1,0 +1,23 @@
+# Getting Started
+
+## Create your account
+- Open HabitFlow and click **Sign Up**.
+- Choose your sign-up method and finish account setup.
+- If you already have an account, click **Log In** instead.
+
+## Log in and open your dashboard
+- After logging in, HabitFlow takes you to your dashboard.
+- The dashboard is your daily home screen.
+
+## Understand the main layout
+- **Tasks area:** Your priority tasks and items you need to finish.
+- **Habits area:** Habits to check off today.
+- **AI/Insights panel:** Daily suggestions based on your recent activity.
+- **Weekly snapshot:** Quick stats like tasks done, habit rate, and best streak.
+
+## First-time setup tips
+- Start with **3 habits or fewer** so it feels manageable.
+- Add a clear title for each task (short and specific).
+- Use **priority** and **due dates** for important tasks.
+- Turn on **privacy mode** for sensitive tasks you do not want included in AI context.
+- Check your dashboard once in the morning and once in the evening.
