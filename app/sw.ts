@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { defaultCache } from "@serwist/next/worker";
+import { defaultCache } from "@serwist/turbopack/worker";
 import { Serwist } from "serwist";
 
 declare global {
