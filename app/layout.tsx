@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import {
   ClerkProvider,
@@ -7,6 +7,7 @@ import {
   Show,
 } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
+import SerwistRegistrar from "./serwist/SerwistRegistrar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,6 +23,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "HabitFlow",
   description: "A production-grade app to track tasks, habits, and recurring goals.",
+  manifest: "/manifest.json",
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "HabitFlow",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#09090b",
 };
 
 export default function RootLayout({
@@ -36,20 +53,22 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
-          <header className="flex items-center justify-end px-6 py-3 border-b border-zinc-800">
-            <Show when="signed-out">
-              <SignInButton>
-                <button className="rounded-md bg-white px-4 py-1.5 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer">
-                  Sign In
-                </button>
-              </SignInButton>
-            </Show>
-            <Show when="signed-in">
-              <UserButton />
-            </Show>
-          </header>
-          {children}
-          <Analytics />
+          <SerwistRegistrar>
+            <header className="flex items-center justify-end px-6 py-3 border-b border-zinc-800">
+              <Show when="signed-out">
+                <SignInButton>
+                  <button className="rounded-md bg-white px-4 py-1.5 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer">
+                    Sign In
+                  </button>
+                </SignInButton>
+              </Show>
+              <Show when="signed-in">
+                <UserButton />
+              </Show>
+            </header>
+            {children}
+            <Analytics />
+          </SerwistRegistrar>
         </body>
       </html>
     </ClerkProvider>
