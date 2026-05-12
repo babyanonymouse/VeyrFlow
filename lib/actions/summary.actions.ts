@@ -98,7 +98,7 @@ export async function getDashboardSummary(clientDateString?: string) {
   return {
     pendingHabits: serialize(pendingHabits),
     priorityTasks: serialize(priorityTasks),
-    greeting: `Good morning, ${user.firstName || "System Thinker"}`,
+    greeting: `Good morning, ${user.firstName}`,
     todayStr: today,
     weeklySnapshot: {
       tasksCompletedThisWeek,
