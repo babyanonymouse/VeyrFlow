@@ -1,6 +1,6 @@
 # HabitFlow User Guides
 
-HabitFlow (sometimes shown as VeyrFlow) helps busy professionals, students, and creators stay on top of tasks and habits without extra friction.
+HabitFlow helps busy professionals, students, and creators stay on top of tasks and habits without extra friction.
 Use these quick guides to set up your account, manage daily work, and track progress over time.
 
 - [Getting Started](./getting-started.md)
@@ -8,3 +8,4 @@ Use these quick guides to set up your account, manage daily work, and track prog
 - [Using Habits](./habits.md)
 - [Daily Focus & AI Suggestions](./ai-suggestions.md)
 - [Dashboard & Progress Tracking](./dashboard.md)
+- [Privacy & Data](./privacy-and-data.md)
