@@ -12,6 +12,9 @@
     "@clerk/nextjs": "^7.0.1",
     "@vercel/analytics": "^2.0.1",
     "esbuild-wasm": "^0.28.0",
+    "fumadocs-core": "^16.8.10",
+    "fumadocs-mdx": "^15.0.4",
+    "fumadocs-ui": "^16.8.10",
     "lucide-react": "^0.577.0",
     "mongodb": "^7.2.0",
     "mongoose": "^9.6.1",
@@ -24,6 +27,7 @@
   "devDependencies": {
     "@serwist/turbopack": "^9.5.11",
     "@tailwindcss/postcss": "^4",
+    "@types/mdx": "^2.0.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
