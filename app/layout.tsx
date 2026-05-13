@@ -9,6 +9,7 @@ import {
 import { Analytics } from "@vercel/analytics/next";
 import SerwistRegistrar from "./serwist/SerwistRegistrar";
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,7 +55,10 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
           <SerwistRegistrar>
-            <header className="flex items-center justify-end px-6 py-3 border-b border-zinc-800">
+            <header className="flex items-center justify-end px-6 py-3 border-b border-zinc-800 gap-4">
+              <Link href="/docs" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
+                Docs
+              </Link>
               <Show when="signed-out">
                 <SignInButton>
                   <button className="rounded-md bg-white px-4 py-1.5 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer">
