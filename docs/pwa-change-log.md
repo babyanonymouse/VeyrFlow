@@ -1,3 +1,8 @@
+---
+title: PWA Prompt Change Log
+description: Implementation notes for PWA-related updates.
+---
+
 # PWA Prompt Change Log
 
 This document logs the updates made after reviewing `Improvements.md` and applying its PWA prompt requirements.

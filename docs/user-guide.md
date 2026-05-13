@@ -1,3 +1,8 @@
+---
+title: User Guide
+description: Complete end-user guide for navigation, tasks, habits, dashboard metrics, and PWA usage.
+---
+
 # HabitFlow User Guide
 
 This guide documents what is currently implemented in HabitFlow based on the app code.

@@ -46,3 +46,8 @@ next-env.d.ts
 # clerk configuration (can include secrets)
 /.clerk/
 implementation_plan.md
+
+# fumadocs
+/.source/
+/.open-next/
+.next/fumadocs/

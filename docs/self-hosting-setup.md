@@ -1,3 +1,8 @@
+---
+title: Self-Hosting & Setup
+description: Guide on how to run HabitFlow locally.
+---
+
 # HabitFlow Self-Hosting & Setup
 
 This guide explains how to run HabitFlow locally.
