@@ -22,8 +22,9 @@ export default function CreateHabitModal() {
     try {
       await createHabit(data);
       setIsOpen(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to create habit");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to create habit";
+      setError(message);
     } finally {
       setIsLoading(false);
     }
