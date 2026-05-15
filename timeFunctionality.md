@@ -45,7 +45,7 @@ const TaskSchema = new Schema({
 
 ### Habit schema (`models/Habit.ts`)
 
-Add `targetTime`, `frequency`, and an array of `completedAt` timestamps:
+Use timezone-safe habit fields: `targetTime` as `"HH:mm"` string and `completedDates` as local date strings:
 
 ```ts
 import { Schema, model } from "mongoose";
@@ -54,21 +54,16 @@ const HabitSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String },
 
-  // When the user wants to do this habit in the day (e.g., 7:30 AM)
-  targetTime: { type: Date },
+  // Stored as local wall-clock time, e.g. "07:30"
+  targetTime: { type: String, default: null },
 
-  // Recurrence pattern (e.g., "daily", "weekdays", "mon,tue,thu", etc.)
-  frequency: { type: String, default: "daily" },
-
-  // Array of timestamps when the user completed the habit
-  completedAt: [{ type: Date }],
+  // Array of local dates, e.g. ["2026-05-14", "2026-05-15"]
+  completedDates: { type: [String], default: [] },
 });
 ```
 
-- Store `targetTime` as a `Date` in the user’s local timezone (e.g., Nairobi time).
-- Use `frequency` to control which days the habit is “active” (daily, weekdays, custom).
-
-Storing dates as `Date` fields in MongoDB is standard and works well for queries and sorting.[web:80][web:83]
+- Do **not** store local habit times as MongoDB `Date`; MongoDB stores dates in UTC and can shift local wall-clock intent.
+- Keep absolute task moments as `Date`; keep relative daily habit time as `"HH:mm"` string.
 
 ---
 
@@ -98,13 +93,9 @@ For each habit:
 - **Target time**  
   - Show a time picker (e.g., 7:30 AM) for `targetTime`.
   - Display this in the habit card: “Do at 7:30 AM”.
-- **Frequency**  
-  - A dropdown or buttons:  
-    - Daily, Weekdays, Weekly, Custom days.
-  - Later you can use this to decide when the habit shows up as “due today.”
 - **Completion tracking**  
   - On the dashboard, for each habit:
-    - Check if `completedAt` contains an entry for today.
+    - Check if `completedDates` contains an entry for today (`YYYY-MM-DD`).
     - Show “✅ Today” or “🕒 Do this now” if the current time is near `targetTime`.
 
 This pattern is common in habit‑tracking apps like TimePlanner and RoutineTracker.[web:77][web:81]
@@ -144,20 +135,12 @@ This matches how many habit apps visualize progress over time.[web:78][web:82]
 
 ---
 
-## 5. Optional: “Do This at That Time” Nudges
+## 5. Optional: Keep Nudges Out of MVP
 
-You can keep this as a **nice‑to‑have** for later:
+For now:
 
-- **Near‑time indicators**  
-  - Compare `targetTime` with the current time (in user’s timezone).
-  - If current time is near `targetTime` (e.g., ±1 hour), show:
-    - “Do this now” or “Almost time for your habit”.
-- **Notifications**  
-  - In future versions, you could:
-    - Trigger local browser notifications.
-    - Or use scheduled emails/Webhooks at `targetTime`.
-
-This “nudge‑at‑time” pattern is used by habit‑tracking apps to keep users on track instead of just showing “you missed it.”[web:77][web:81]
+- Use native UI state only (surface habits in dashboard when app is opened).
+- Avoid web push/background notification complexity in this phase.
 
 ---
 
@@ -166,12 +149,13 @@ This “nudge‑at‑time” pattern is used by habit‑tracking apps to keep us
 To adopt this in HabitFlow:
 
 1. Update your Mongoose schemas:
-   - Add `dueAt` to `Task`.
-   - Add `targetTime`, `frequency`, and `completedAt[]` to `Habit`.
+   - Keep task absolute time fields as `Date`.
+   - Add `targetTime` (`HH:mm` string) to `Habit`.
+   - Keep habit completion history in `completedDates[]` (`YYYY-MM-DD` strings).
 2. Extend your Server Actions:
-   - Accept `dueAt` for tasks, `targetTime` and `frequency` for habits.
+   - Accept `targetTime` for habits.
 3. Update the UI forms:
-   - Add date/time pickers for `dueAt` and `targetTime`.
+   - Use native `<input type="time">` for habit `targetTime`.
 4. Enhance the dashboard:
    - Sort tasks by `dueAt`.
    - Show habit status and “Do this at 7:30 AM” reminders.

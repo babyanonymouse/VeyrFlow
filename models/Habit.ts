@@ -9,7 +9,7 @@ export interface IHabit extends Document {
   userId: string;               // multi-tenant prep (indexed)
   title: string;                // max 100 chars
   description?: string;         // max 500 chars
-  frequency: "daily" | "weekly";
+  targetTime?: string | null;   // timezone-safe local time (HH:mm)
   isActive: boolean;
   completedDates: string[];     // historical completion log (YYYY-MM-DD)
   aiSuggestions?: IAiSuggestions; // populated by M5 AI Activation
@@ -22,9 +22,9 @@ const HabitSchema = new Schema<IHabit>(
     userId:      { type: String, required: true, index: true },
     title:       { type: String, required: true, trim: true, maxlength: 100 },
     description: { type: String, trim: true, maxlength: 500 },
-    frequency:   { type: String, enum: ["daily", "weekly"], default: "daily" },
+    targetTime:  { type: String, default: null },
     isActive:    { type: Boolean, default: true },
-    completedDates: [{ type: String }],
+    completedDates: { type: [String], default: [] },
     aiSuggestions: {
       _id:         false,        // no unnecessary nested ObjectIDs
       content:     { type: String },

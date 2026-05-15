@@ -16,7 +16,7 @@ export default function CreateHabitModal() {
     const data = {
       title: formData.get("title") as string,
       description: formData.get("description") as string,
-      frequency: formData.get("frequency") as string || "daily",
+      targetTime: formData.get("targetTime") as string,
     };
 
     try {
@@ -83,15 +83,13 @@ export default function CreateHabitModal() {
 
           <div>
             <label className="block text-sm font-medium text-zinc-400 mb-1">
-              Frequency
+              Target Time (Optional)
             </label>
-            <select
-              name="frequency"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors"
-            >
-              <option value="daily">Daily</option>
-              {/* Future proofing */}
-            </select>
+            <input
+              type="time"
+              name="targetTime"
+              className="w-full bg-transparent border border-zinc-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+            />
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
