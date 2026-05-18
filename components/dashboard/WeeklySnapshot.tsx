@@ -61,13 +61,16 @@ export default function WeeklySnapshot({
       ? `${snapshot.bestStreak}-day active streak window`
       : "No active streak yet";
 
+  // habitCompletionRate is computed as a 0-100 percentage in summary.actions.
   const habitCompletionProgress = Math.max(0, Math.min(100, snapshot.habitCompletionRate));
 
   return (
     <section className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Weekly Metrics</p>
+          <p aria-hidden="true" className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+            Weekly Metrics
+          </p>
           <h2 className="text-xl font-semibold text-zinc-100">Weekly Snapshot</h2>
         </div>
         <p className="text-sm text-zinc-400">
