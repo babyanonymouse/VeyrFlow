@@ -66,8 +66,8 @@ export default function WeeklySnapshot({
   const habitCompletionProgress = Math.max(0, Math.min(100, snapshot.habitCompletionRate));
   const metricAriaLabels: Record<keyof WeeklySnapshotData, string> = {
     tasksCompletedThisWeek: `${snapshot.tasksCompletedThisWeek} tasks completed this week`,
-    habitCompletionRate: `${snapshot.habitCompletionRate}% habit completion today`,
-    bestStreak: `${snapshot.bestStreak} day best active streak`,
+    habitCompletionRate: `${snapshot.habitCompletionRate}% habit completion rate today`,
+    bestStreak: `${snapshot.bestStreak} ${snapshot.bestStreak === 1 ? "day" : "days"} best active streak`,
   };
 
   return (
@@ -75,7 +75,7 @@ export default function WeeklySnapshot({
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
         <div>
           <p aria-hidden="true" className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-            Weekly Metrics
+            Progress Metrics
           </p>
           <h2 className="text-xl font-semibold text-zinc-100">Weekly Snapshot</h2>
         </div>
