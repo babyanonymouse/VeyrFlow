@@ -61,8 +61,14 @@ export default function WeeklySnapshot({
       ? `${snapshot.bestStreak}-day active streak window`
       : "No active streak yet";
 
-  // habitCompletionRate is computed as a 0-100 percentage in summary.actions.
+  // habitCompletionRate is computed as a 0-100 percentage in summary.actions;
+  // clamp defensively in case external/legacy data falls outside expected bounds.
   const habitCompletionProgress = Math.max(0, Math.min(100, snapshot.habitCompletionRate));
+  const metricAriaLabels: Record<keyof WeeklySnapshotData, string> = {
+    tasksCompletedThisWeek: `${snapshot.tasksCompletedThisWeek} tasks completed this week`,
+    habitCompletionRate: `${snapshot.habitCompletionRate}% habit completion today`,
+    bestStreak: `${snapshot.bestStreak} day best active streak`,
+  };
 
   return (
     <section className="space-y-4">
@@ -82,7 +88,7 @@ export default function WeeklySnapshot({
         {tiles.map(({ key, label, sublabel, icon: Icon, color, ring, bg, glow, format }) => (
           <article
             key={key}
-            aria-label={`${label}: ${format(snapshot[key])} ${sublabel}`}
+            aria-label={metricAriaLabels[key]}
             className="relative overflow-hidden rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900/80 to-zinc-900/40 p-5 transition-colors hover:border-zinc-700"
           >
             <div
