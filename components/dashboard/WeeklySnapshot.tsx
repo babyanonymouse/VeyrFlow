@@ -77,6 +77,7 @@ export default function WeeklySnapshot({
         {tiles.map(({ key, label, sublabel, icon: Icon, color, ring, bg, glow, format }) => (
           <article
             key={key}
+            aria-label={`${label}: ${format(snapshot[key])} ${sublabel}`}
             className="relative overflow-hidden rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900/80 to-zinc-900/40 p-5 transition-colors hover:border-zinc-700"
           >
             <div
