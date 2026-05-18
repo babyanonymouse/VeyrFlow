@@ -61,11 +61,13 @@ export default function WeeklySnapshot({
       ? `${snapshot.bestStreak}-day active streak window`
       : "No active streak yet";
 
+  const habitCompletionProgress = Math.max(0, Math.min(100, snapshot.habitCompletionRate));
+
   return (
     <section className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Performance Pulse</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Weekly Metrics</p>
           <h2 className="text-xl font-semibold text-zinc-100">Weekly Snapshot</h2>
         </div>
         <p className="text-sm text-zinc-400">
@@ -107,7 +109,7 @@ export default function WeeklySnapshot({
                 <div className="h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-orange-400 transition-all"
-                    style={{ width: `${Math.max(0, Math.min(100, snapshot.habitCompletionRate))}%` }}
+                    style={{ width: `${habitCompletionProgress}%` }}
                   />
                 </div>
               </div>
