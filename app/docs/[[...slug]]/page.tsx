@@ -16,12 +16,24 @@ export default async function Page(props: {
   const MDX = page.data.body;
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
-      <DocsBody>
-        <MDX components={{ ...defaultMdxComponents }} />
-      </DocsBody>
+    <DocsPage toc={page.data.toc} full={page.data.full} className="relative">
+      {/* Branded Ambient Background Glows */}
+      <div className="absolute -top-20 left-10 w-72 h-72 bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute -bottom-20 right-10 w-72 h-72 bg-purple-500/5 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="relative z-10 max-w-4xl mx-auto py-2">
+        <div className="mb-6 border-b border-zinc-800/80 pb-6">
+          <DocsTitle className="text-3xl font-black text-white tracking-tight">{page.data.title}</DocsTitle>
+          {page.data.description && (
+            <DocsDescription className="text-zinc-450 text-sm mt-2 leading-relaxed">
+              {page.data.description}
+            </DocsDescription>
+          )}
+        </div>
+        <DocsBody className="text-zinc-300">
+          <MDX components={{ ...defaultMdxComponents }} />
+        </DocsBody>
+      </div>
     </DocsPage>
   );
 }

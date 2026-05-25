@@ -9,7 +9,6 @@ import {
 import { Analytics } from "@vercel/analytics/next";
 import SerwistRegistrar from "./serwist/SerwistRegistrar";
 import "./globals.css";
-import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

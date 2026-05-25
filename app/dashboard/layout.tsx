@@ -12,7 +12,7 @@ export default function DashboardLayout({
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-zinc-950">
       {/* Mobile Top Header — hidden on desktop, provides logo, settings, docs, and account */}
-      <header className="flex md:hidden items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-950 sticky top-0 z-35 backdrop-blur-md bg-zinc-950/90">
+      <header className="flex md:hidden items-center justify-between px-6 py-4 border-b border-zinc-800 sticky top-0 z-35 backdrop-blur-md bg-zinc-950/90">
         <Link href="/dashboard" className="flex items-center gap-2 outline-none">
           <Activity className="w-5 h-5 text-indigo-400" />
           <span className="font-bold tracking-tight text-white">HabitFlow</span>
