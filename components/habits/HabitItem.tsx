@@ -1,7 +1,7 @@
 "use client";
 
 import { useOptimistic, useState, startTransition } from "react";
-import { Flame, Check, Trash2, Loader2 } from "lucide-react";
+import { Flame, Check, Trash2, Loader2, Clock } from "lucide-react";
 import { checkOffHabit, deleteHabit } from "@/lib/actions/habit.actions";
 import { calculateStreak } from "@/lib/utils/date";
 import ConsistencyHeatmap from "../charts/ConsistencyHeatmap";
@@ -71,6 +71,19 @@ export default function HabitItem({ habit }: { habit: any }) {
               <p className="text-sm text-zinc-400 max-w-xl">
                 {optimisticHabit.description}
               </p>
+            )}
+            {optimisticHabit.targetTime && (
+              <div className="flex items-center gap-1.5 text-xs text-zinc-500 mt-2 font-medium">
+                <Clock size={13} />
+                <span>Target: {(() => {
+                  const [hStr, mStr] = optimisticHabit.targetTime.split(":");
+                  if (!hStr || !mStr) return optimisticHabit.targetTime;
+                  const hour = parseInt(hStr, 10);
+                  const ampm = hour >= 12 ? "PM" : "AM";
+                  const hour12 = hour % 12 || 12;
+                  return `${hour12}:${mStr} ${ampm}`;
+                })()}</span>
+              </div>
             )}
           </div>
           

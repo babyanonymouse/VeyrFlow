@@ -1,8 +1,9 @@
 "use client";
 
-import { useOptimistic, startTransition } from "react";
+import { useOptimistic, startTransition, useState, useEffect } from "react";
 import { checkOffHabit } from "@/lib/actions/habit.actions";
 import { setTaskCompleted } from "@/lib/actions/task.actions";
+import { getDashboardSummary } from "@/lib/actions/summary.actions";
 import HabitCarousel from "./HabitCarousel";
 import PriorityTaskList from "./PriorityTaskList";
 import AiIntelligenceSlot from "./AiIntelligenceSlot";
@@ -10,22 +11,39 @@ import WeeklySnapshot from "./WeeklySnapshot";
 import { Activity } from "lucide-react";
 
 export default function NerveCenterClient({ initialData }: { initialData: any }) {
+  const [overrideSummary, setOverrideSummary] = useState<any>(null);
+  const activeData = overrideSummary || initialData;
+
   const [optHabits, removeOptHabit] = useOptimistic(
-    initialData.pendingHabits,
+    activeData.pendingHabits,
     (state: any[], habitId: string) => state.filter((h) => h._id !== habitId)
   );
 
   const [optTasks, removeOptTask] = useOptimistic(
-    initialData.priorityTasks,
+    activeData.priorityTasks,
     (state: any[], taskId: string) => state.filter((t) => t._id !== taskId)
   );
 
+  useEffect(() => {
+    const clientToday = new Date().toLocaleDateString("en-CA");
+    if (clientToday !== initialData.todayStr) {
+      getDashboardSummary(clientToday).then((summary) => {
+        setOverrideSummary(summary);
+      });
+    }
+  }, [initialData.todayStr]);
+
   const handleCheckOffHabit = async (habitId: string) => {
+    const clientToday = new Date().toLocaleDateString("en-CA");
     startTransition(() => {
       removeOptHabit(habitId);
     });
     try {
-      await checkOffHabit({ habitId, localDateString: initialData.todayStr });
+      await checkOffHabit({ habitId, localDateString: clientToday });
+      if (clientToday !== initialData.todayStr) {
+        const summary = await getDashboardSummary(clientToday);
+        setOverrideSummary(summary);
+      }
     } catch (e) {
       console.error("Failed to check off habit optimistically", e);
     }
@@ -37,6 +55,11 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
     });
     try {
       await setTaskCompleted({ _id: taskId, isCompleted: true });
+      const clientToday = new Date().toLocaleDateString("en-CA");
+      if (clientToday !== initialData.todayStr) {
+        const summary = await getDashboardSummary(clientToday);
+        setOverrideSummary(summary);
+      }
     } catch (e) {
       console.error("Failed to complete task optimistically", e);
     }
@@ -48,14 +71,14 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
     <div className="p-6 md:p-8 space-y-8 max-w-5xl mx-auto overflow-x-hidden md:overflow-x-visible">
       {/* Greeting Header */}
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight text-white">{initialData.greeting}</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white">{activeData.greeting}</h1>
         <p className="text-zinc-400 text-lg">
           You have <span className="text-emerald-400 font-semibold">{optHabits.length}</span> habits to maintain and <span className="text-orange-400 font-semibold">{optTasks.length}</span> priority tasks.
         </p>
       </div>
 
       {/* Weekly Snapshot — always visible, even when today's list is empty */}
-      <WeeklySnapshot snapshot={initialData.weeklySnapshot} />
+      <WeeklySnapshot snapshot={activeData.weeklySnapshot} />
 
       {isDoubleEmpty ? (
         <div className="py-16 px-6 flex flex-col items-center justify-center text-center space-y-6 border border-zinc-800 rounded-3xl bg-zinc-900/50 relative overflow-hidden">
@@ -75,7 +98,7 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
           {/* Main Content Area (Habit Carousel + Tasks) */}
           <div className="lg:col-span-8 space-y-10 min-w-0">
             {optHabits.length > 0 && (
-              <HabitCarousel habits={optHabits} onCheckOff={handleCheckOffHabit} todayStr={initialData.todayStr} />
+              <HabitCarousel habits={optHabits} onCheckOff={handleCheckOffHabit} todayStr={activeData.todayStr} />
             )}
 
             {optTasks.length > 0 && (
@@ -92,3 +115,4 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
     </div>
   );
 }
+

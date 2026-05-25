@@ -40,6 +40,7 @@ export async function createHabit(formData: unknown) {
   });
 
   revalidatePath("/dashboard/habits");
+  revalidatePath("/dashboard");
   return { success: true, habit: JSON.parse(JSON.stringify(newHabit)) };
 }
 
@@ -68,6 +69,7 @@ export async function checkOffHabit(data: unknown) {
   }
 
   revalidatePath("/dashboard/habits");
+  revalidatePath("/dashboard");
   return { success: true, completedDates: updated.completedDates };
 }
 
@@ -79,5 +81,6 @@ export async function deleteHabit(habitId: string) {
   await Habit.findOneAndDelete({ _id: habitId, userId });
 
   revalidatePath("/dashboard/habits");
+  revalidatePath("/dashboard");
   return { success: true };
 }
