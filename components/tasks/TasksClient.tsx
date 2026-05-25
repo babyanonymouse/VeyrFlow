@@ -13,6 +13,29 @@ import {
 import TaskModal, { TaskModalValues } from "@/components/tasks/TaskModal";
 import { taskCreateSchema } from "@/lib/validators/task";
 
+function toLocalDateTimeString(dateStr: string): string {
+  const date = new Date(dateStr);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function formatDeadline(deadlineStr: string): string {
+  const d = new Date(deadlineStr);
+  const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const hasTime = d.getHours() !== 0 || d.getMinutes() !== 0;
+  if (hasTime) {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    return `due ${dateStr} at ${timeStr}`;
+  }
+  return `due ${dateStr}`;
+}
+
 export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] }) {
   const [tasks, setTasks] = useState<TaskDTO[]>(initialTasks);
   const [optimisticTasks, setOptimisticTasks] = useOptimistic(
@@ -23,7 +46,23 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<TaskDTO | null>(null);
 
-  const sorted = useMemo(() => optimisticTasks, [optimisticTasks]);
+  // Chronological deadline sorting with active tasks first, completed tasks last
+  const sorted = useMemo(() => {
+    return [...optimisticTasks].sort((a, b) => {
+      // Completed tasks go to the bottom
+      if (a.isCompleted !== b.isCompleted) {
+        return a.isCompleted ? 1 : -1;
+      }
+      // If neither or both are completed, sort by deadline
+      if (a.deadline && b.deadline) {
+        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+      }
+      if (a.deadline) return -1; // tasks with deadlines come first
+      if (b.deadline) return 1;
+      // If neither has deadline, sort by createdAt descending
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  }, [optimisticTasks]);
 
   function openCreate() {
     setEditing(null);
@@ -37,7 +76,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
 
   function onSubmit(values: TaskModalValues) {
     startTransition(async () => {
-      // Convert form values to server schema input (deadline string -> Date)
+      // Convert form values to server schema input (deadline string -> Date, using client timezone offset)
       const toServer = taskCreateSchema.parse({
         ...values,
         deadline: values.deadline ? new Date(values.deadline) : undefined,
@@ -138,7 +177,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
                       disabled={isPending}
                       className={`inline-flex h-6 w-6 items-center justify-center rounded-md border transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${
                         t.isCompleted
-                          ? "border-emerald-700 bg-emerald-900/30 text-emerald-200"
+                           ? "border-emerald-700 bg-emerald-900/30 text-emerald-200"
                           : "border-zinc-700 bg-zinc-950 text-zinc-400 hover:bg-zinc-900"
                       }`}
                       aria-label={t.isCompleted ? "Mark incomplete" : "Mark complete"}
@@ -156,7 +195,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
                     ) : null}
                     {t.deadline ? (
                       <span className="rounded bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-300">
-                        due {new Date(t.deadline).toLocaleDateString()}
+                        {formatDeadline(t.deadline)}
                       </span>
                     ) : null}
                   </div>
@@ -214,7 +253,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
                   priority: editing.priority,
                   privacyMode: editing.privacyMode,
                   deadline: editing.deadline
-                    ? new Date(editing.deadline).toISOString().slice(0, 10)
+                    ? toLocalDateTimeString(editing.deadline)
                     : "",
                 }
               : undefined
@@ -230,4 +269,3 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
     </>
   );
 }
-
