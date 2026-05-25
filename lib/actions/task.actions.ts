@@ -79,6 +79,7 @@ export async function createTask(input: TaskCreateInput): Promise<TaskDTO> {
       deadline: parsed.deadline,
     });
     revalidatePath("/dashboard/tasks");
+    revalidatePath("/dashboard");
     return toTaskDTO(created);
   } catch (err) {
     console.error("[createTask] Failed:", err);
@@ -141,6 +142,7 @@ export async function updateTask(input: TaskUpdateInput): Promise<TaskDTO> {
     });
     if (!updated) throw new Error("404 Not Found");
     revalidatePath("/dashboard/tasks");
+    revalidatePath("/dashboard");
     return toTaskDTO(updated);
   } catch (err) {
     console.error("[updateTask] Failed:", err);
@@ -158,6 +160,7 @@ export async function deleteTask(taskId: string): Promise<void> {
     await connectDB();
     await Task.deleteOne({ _id: taskId, userId });
     revalidatePath("/dashboard/tasks");
+    revalidatePath("/dashboard");
   } catch (err) {
     console.error("[deleteTask] Failed:", err);
     throw err;
@@ -188,6 +191,7 @@ export async function setTaskCompleted(
     );
     if (!updated) throw new Error("404 Not Found");
     revalidatePath("/dashboard/tasks");
+    revalidatePath("/dashboard");
     return toTaskDTO(updated);
   } catch (err) {
     console.error("[setTaskCompleted] Failed:", err);
