@@ -1,0 +1,23 @@
+# Dashboard & Progress Tracking
+
+## How the dashboard is organized
+- **Top summary:** A quick greeting and your current daily load.
+- **Today’s focus:** Pending habits and priority tasks that need attention now.
+- **Weekly snapshot:** Key progress tiles (tasks completed this week, habit completion rate, best streak).
+- **Insights panel:** Space for AI-powered daily guidance.
+
+## Task grouping
+Tasks are shown by practical status, such as:
+- Items to do now (today’s priority tasks)
+- Upcoming or open items in your task list
+- Completed items you’ve already checked off
+
+## Habit stats you can track
+- Current and best streak behavior
+- Daily habit completion progress
+- Visual consistency over recent days
+
+## Filter and sort tips
+- Use priority and due dates to surface important tasks first.
+- Check completed marks to separate finished vs. active work.
+- Keep titles short so scanning your list is faster.

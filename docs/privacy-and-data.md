@@ -1,0 +1,17 @@
+# Privacy & Data
+
+## What HabitFlow stores
+HabitFlow stores the data needed to run your workspace:
+- Tasks and task details
+- Habits and habit settings
+- Completion history (task completion and habit check-offs)
+
+## How AI suggestions use data
+- AI suggestions use relevant task/habit context to create daily guidance.
+- Recent suggestion outputs may be cached for about 24 hours to reduce repeated generation.
+- Privacy-mode tasks are filtered out from AI context.
+- Data is not sent for suggestion generation unless that feature is enabled in your workflow.
+
+## Exporting or deleting your data
+- If data export/delete controls are available in your account settings, use those first.
+- If not, contact app support and request data export or account deletion.
