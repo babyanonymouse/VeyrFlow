@@ -8,7 +8,6 @@ const links = [
   { href: "/dashboard",          icon: LayoutDashboard, label: "Home" },
   { href: "/dashboard/tasks",    icon: CheckSquare,     label: "Tasks" },
   { href: "/dashboard/habits",   icon: Repeat2,         label: "Habits" },
-  { href: "/dashboard/settings", icon: Settings,        label: "Settings" },
 ];
 
 function isActive(path: string, href: string) {
