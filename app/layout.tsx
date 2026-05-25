@@ -1,12 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import {
-  ClerkProvider,
-  SignInButton,
-  UserButton,
-  Show,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
+import NextTopLoader from "nextjs-toploader";
+import { Toaster } from "sonner";
 import SerwistRegistrar from "./serwist/SerwistRegistrar";
 import "./globals.css";
 
@@ -55,9 +52,16 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
+          <NextTopLoader
+            color="#6366f1"
+            height={3}
+            showSpinner={false}
+            crawlSpeed={120}
+          />
           <SerwistRegistrar>
             {children}
             <Analytics />
+            <Toaster richColors position="top-right" />
           </SerwistRegistrar>
         </body>
       </html>
