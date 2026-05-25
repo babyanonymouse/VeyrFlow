@@ -1,9 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { X } from "lucide-react";
+import * as chrono from "chrono-node";
+import { format, addDays, addWeeks, startOfWeek, isToday, isTomorrow } from "date-fns";
+import { CalendarDays, X } from "lucide-react";
+import { DayPicker } from "react-day-picker";
+import { Drawer } from "vaul";
 import { z } from "zod";
 import { taskFormSchema, type TaskFormInput } from "@/lib/validators/task";
+import { toLocalDateTimeInputValue } from "@/lib/utils/task-deadline";
 
 export type TaskModalValues = TaskFormInput;
 
@@ -41,7 +46,66 @@ export default function TaskModal({
   );
   const [deadline, setDeadline] = useState(defaults.deadline);
   const [privacyMode, setPrivacyMode] = useState(defaults.privacyMode);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [parsedDateText, setParsedDateText] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const selectedDate = useMemo(() => {
+    if (!deadline) return undefined;
+    return new Date(deadline);
+  }, [deadline]);
+
+  const deadlinePillLabel = useMemo(() => {
+    if (!selectedDate) return "";
+    const dateLabel = isToday(selectedDate)
+      ? "Today"
+      : isTomorrow(selectedDate)
+        ? "Tomorrow"
+        : format(selectedDate, "EEE, d MMM");
+    return `${dateLabel}, ${format(selectedDate, "HH:mm")}`;
+  }, [selectedDate]);
+
+  const timeValue = useMemo(() => {
+    if (!selectedDate) return "09:00";
+    return format(selectedDate, "HH:mm");
+  }, [selectedDate]);
+
+  function applyDate(nextDate: Date, closeDrawer = false) {
+    const base = new Date(nextDate);
+    const current = selectedDate ?? new Date();
+    base.setHours(current.getHours(), current.getMinutes(), 0, 0);
+    setDeadline(toLocalDateTimeInputValue(base));
+    setParsedDateText(null);
+    if (closeDrawer) setDrawerOpen(false);
+  }
+
+  function handleTitleChange(nextTitle: string) {
+    const parsed = chrono.parse(nextTitle, new Date(), { forwardDate: true });
+    if (!parsed[0] || !parsed[0].start) {
+      setTitle(nextTitle);
+      return;
+    }
+
+    const match = parsed[0];
+    const cleanTitle = `${nextTitle.slice(0, match.index)} ${nextTitle.slice(
+      match.index + match.text.length
+    )}`
+      .replace(/\s+/g, " ")
+      .trim();
+
+    setTitle(cleanTitle);
+    setDeadline(toLocalDateTimeInputValue(match.start.date()));
+    setParsedDateText(match.text.trim());
+    setErrors((prev) => ({ ...prev, title: "" }));
+  }
+
+  function clearParsedDate() {
+    if (!parsedDateText) return;
+    const restoredTitle = [title.trim(), parsedDateText].filter(Boolean).join(" ");
+    setTitle(restoredTitle);
+    setDeadline("");
+    setParsedDateText(null);
+  }
 
   function validate(): TaskModalValues | null {
     const payload = {
@@ -126,12 +190,34 @@ export default function TaskModal({
             </label>
             <input
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => handleTitleChange(e.target.value)}
               className="mt-1 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-600"
               placeholder="e.g. Implement task CRUD"
               maxLength={100}
               autoFocus
             />
+            {deadline ? (
+              <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-indigo-500/30 bg-indigo-500/20 pr-1 text-xs font-medium text-indigo-100">
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(true)}
+                  className="inline-flex items-center gap-2 px-3 py-1 transition-colors hover:bg-indigo-500/20"
+                >
+                  <CalendarDays size={14} />
+                  <span>{deadlinePillLabel}</span>
+                </button>
+                {parsedDateText ? (
+                  <button
+                    type="button"
+                    onClick={clearParsedDate}
+                    className="rounded-full p-1 transition-colors hover:bg-indigo-500/40"
+                    aria-label="Remove parsed date"
+                  >
+                    <X size={12} />
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
             {errors.title ? (
               <p className="mt-1 text-xs text-red-400">{errors.title}</p>
             ) : null}
@@ -180,13 +266,14 @@ export default function TaskModal({
               <label className="block text-sm font-medium text-zinc-200">
                 Deadline
               </label>
-              <input
-                title="Deadline"
-                type="datetime-local"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-                className="mt-1 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-600"
-              />
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                className="mt-1 inline-flex w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors hover:bg-zinc-900"
+              >
+                <span>{deadline ? deadlinePillLabel : "Set deadline"}</span>
+                <CalendarDays size={16} />
+              </button>
             </div>
           </div>
 
@@ -224,7 +311,88 @@ export default function TaskModal({
           </button>
         </div>
       </div>
+
+      <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 z-[70] bg-black/60" />
+          <Drawer.Content className="fixed inset-x-0 bottom-0 z-[80] rounded-t-2xl border border-zinc-800 bg-zinc-950 p-4 shadow-2xl">
+            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-zinc-700" />
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => applyDate(new Date(), true)}
+                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800"
+                >
+                  Today
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyDate(addDays(new Date(), 1), true)}
+                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800"
+                >
+                  Tomorrow
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const today = new Date();
+                    const day = today.getDay();
+                    const daysUntilSaturday = day === 6 || day === 0 ? 0 : 6 - day;
+                    applyDate(addDays(today, daysUntilSaturday), true);
+                  }}
+                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800"
+                >
+                  This Weekend
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyDate(startOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }), true)}
+                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800"
+                >
+                  Next Week
+                </button>
+              </div>
+
+              <DayPicker
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => {
+                  if (!date) return;
+                  applyDate(date);
+                }}
+                className="rounded-xl border border-zinc-800/70 bg-zinc-950/50 p-3"
+                classNames={{
+                  month_caption: "mb-3 text-sm font-medium text-zinc-100",
+                  weekdays: "mb-1",
+                  weekday: "text-xs text-zinc-500",
+                  day: "text-zinc-200",
+                  day_button:
+                    "h-9 w-9 rounded-md text-sm transition-colors hover:bg-zinc-900 aria-selected:bg-indigo-500 aria-selected:text-white",
+                  today: "text-indigo-300",
+                }}
+              />
+
+              <div>
+                <label className="block text-xs font-medium text-zinc-400">Time</label>
+                <input
+                  title="Time"
+                  type="time"
+                  value={timeValue}
+                  onChange={(e) => {
+                    const [hours, minutes] = e.target.value.split(":").map(Number);
+                    const next = selectedDate ? new Date(selectedDate) : new Date();
+                    next.setHours(hours || 0, minutes || 0, 0, 0);
+                    setDeadline(toLocalDateTimeInputValue(next));
+                    setParsedDateText(null);
+                  }}
+                  className="mt-1 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-600"
+                />
+              </div>
+            </div>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
     </div>
   );
 }
-

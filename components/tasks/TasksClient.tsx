@@ -12,17 +12,10 @@ import {
 } from "@/lib/actions/task.actions";
 import TaskModal, { TaskModalValues } from "@/components/tasks/TaskModal";
 import { taskCreateSchema } from "@/lib/validators/task";
-
-function toLocalDateTimeString(dateStr: string): string {
-  const date = new Date(dateStr);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
+import {
+  toLocalDateTimeInputValue,
+  toUtcDeadlineISOString,
+} from "@/lib/utils/task-deadline";
 
 function formatDeadline(deadlineStr: string): string {
   const d = new Date(deadlineStr);
@@ -76,10 +69,10 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
 
   function onSubmit(values: TaskModalValues) {
     startTransition(async () => {
-      // Convert form values to server schema input (deadline string -> Date, using client timezone offset)
+      // Convert local deadline to strict UTC ISO before validation/server action.
       const toServer = taskCreateSchema.parse({
         ...values,
-        deadline: values.deadline ? new Date(values.deadline) : undefined,
+        deadline: toUtcDeadlineISOString(values.deadline),
       });
 
       if (editing) {
@@ -253,7 +246,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
                   priority: editing.priority,
                   privacyMode: editing.privacyMode,
                   deadline: editing.deadline
-                    ? toLocalDateTimeString(editing.deadline)
+                    ? toLocalDateTimeInputValue(new Date(editing.deadline))
                     : "",
                 }
               : undefined
