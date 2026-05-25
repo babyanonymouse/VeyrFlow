@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useOptimistic, useState, useTransition } from "react";
-import { Plus, CheckSquare, Trash2, Pencil, Check } from "lucide-react";
+import { Plus, CheckSquare, Trash2, Pencil, Check, Loader2 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import type { TaskDTO } from "@/lib/actions/task.actions";
 import {
@@ -137,12 +137,22 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4" aria-busy={isPending}>
         <div>
           <h1 className="text-xl font-semibold text-zinc-100">Tasks</h1>
           <p className="text-sm text-zinc-500">
             Create, edit, and manage your tasks.
           </p>
+          {isPending ? (
+            <p
+              role="status"
+              aria-live="polite"
+              className="mt-1 inline-flex items-center gap-1.5 text-xs text-indigo-300"
+            >
+              <Loader2 size={12} className="animate-spin" />
+              Saving changes...
+            </p>
+          ) : null}
         </div>
         <button
           type="button"
@@ -150,8 +160,8 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
           className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           disabled={isPending}
         >
-          <Plus size={16} />
-          New Task
+          {isPending ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+          {isPending ? "Working..." : "New Task"}
         </button>
       </div>
 

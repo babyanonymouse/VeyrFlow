@@ -7,6 +7,7 @@ import {
   Show,
 } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
+import NextTopLoader from "nextjs-toploader";
 import SerwistRegistrar from "./serwist/SerwistRegistrar";
 import "./globals.css";
 
@@ -55,6 +56,13 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
+          <NextTopLoader
+            color="#6366f1"
+            showSpinner={false}
+            height={3}
+            crawlSpeed={160}
+            speed={220}
+          />
           <SerwistRegistrar>
             {children}
             <Analytics />
