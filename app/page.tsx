@@ -32,7 +32,10 @@ export default async function LandingPage() {
           <Activity className="w-5 h-5 text-indigo-400" />
           <span className="font-bold text-lg tracking-tight text-white">HabitFlow</span>
         </div>
-        <div className="flex items-center gap-4 text-sm font-medium">
+        <div className="flex items-center gap-6 text-sm font-medium">
+          <Link href="/docs" className="text-zinc-400 hover:text-white transition-colors">
+            Docs
+          </Link>
           <Link href="/sign-in" className="text-zinc-400 hover:text-white transition-colors">
             Log In
           </Link>
@@ -258,6 +261,7 @@ export default async function LandingPage() {
           <span className="font-bold text-lg text-white">HabitFlow</span>
           
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
+            <Link href="/docs" className="font-medium text-xs tracking-widest uppercase text-zinc-400 hover:text-indigo-400 transition-colors">Docs</Link>
             <Link href="#" className="font-medium text-xs tracking-widest uppercase text-zinc-400 hover:text-indigo-400 transition-colors">Privacy</Link>
             <Link href="#" className="font-medium text-xs tracking-widest uppercase text-zinc-400 hover:text-indigo-400 transition-colors">Terms</Link>
             <Link href="#" className="font-medium text-xs tracking-widest uppercase text-zinc-400 hover:text-emerald-400 transition-colors">System Status</Link>

@@ -26,6 +26,8 @@ export const metadata: Metadata = {
   description: "A production-grade app to track tasks, habits, and recurring goals.",
   manifest: "/manifest.json",
   icons: {
+    icon: "/icon-192x192.png",
+    shortcut: "/icon-192x192.png",
     apple: "/apple-touch-icon.png",
   },
   appleWebApp: {
@@ -55,21 +57,6 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
           <SerwistRegistrar>
-            <header className="flex items-center justify-end px-6 py-3 border-b border-zinc-800 gap-4">
-              <Link href="/docs" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors">
-                Docs
-              </Link>
-              <Show when="signed-out">
-                <SignInButton>
-                  <button className="rounded-md bg-white px-4 py-1.5 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer">
-                    Sign In
-                  </button>
-                </SignInButton>
-              </Show>
-              <Show when="signed-in">
-                <UserButton />
-              </Show>
-            </header>
             {children}
             <Analytics />
           </SerwistRegistrar>
