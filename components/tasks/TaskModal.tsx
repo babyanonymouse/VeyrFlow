@@ -181,8 +181,8 @@ export default function TaskModal({
                 Deadline
               </label>
               <input
-              title="Deadline"
-                type="date"
+                title="Deadline"
+                type="datetime-local"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
                 className="mt-1 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-600"
