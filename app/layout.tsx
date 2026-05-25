@@ -17,6 +17,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const TOP_LOADER_COLOR = "#6366f1";
+
 export const metadata: Metadata = {
   title: "HabitFlow",
   description: "A production-grade app to track tasks, habits, and recurring goals.",
@@ -53,7 +55,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
           <NextTopLoader
-            color="#6366f1"
+            color={TOP_LOADER_COLOR}
             height={3}
             showSpinner={false}
             crawlSpeed={120}
