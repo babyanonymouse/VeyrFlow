@@ -25,8 +25,8 @@ export function isYesterday(date1Str: string, date2Str: string): boolean {
 export function calculateStreak(completedDates: string[], todayStr: string): number {
   if (!completedDates || completedDates.length === 0) return 0;
 
-  // Ensure dates are sorted oldest to newest
-  const sorted = [...completedDates].sort((a, b) => a.localeCompare(b));
+  // Deduplicate and ensure dates are sorted oldest to newest
+  const sorted = [...new Set(completedDates)].sort((a, b) => a.localeCompare(b));
   
   let currentStreak = 0;
   let lastCheckedDate = "";
