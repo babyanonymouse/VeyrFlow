@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "HabitFlow | Build Better Habits",
     description: "HabitFlow helps you build consistency, track your progress, and take control of your daily routines.",
     type: "website",
-    url: "https://habitflow.app",
+    url: "https://habit-flow-pink.vercel.app/",
     siteName: "HabitFlow",
   },
 };
