@@ -13,6 +13,7 @@ import TaskModal from "@/components/tasks/TaskModal";
 import HabitAnalyticsDrawer from "@/components/habits/HabitAnalyticsDrawer";
 import { toLocalDateTimeInputValue, toUtcDeadlineISOString } from "@/lib/utils/task-deadline";
 import type { TaskDTO } from "@/lib/actions/task.actions";
+import { taskCreateSchema } from "@/lib/validators/task";
 
 export interface HabitDTO {
   _id: string;
@@ -113,15 +114,15 @@ export default function NerveCenterClient({ initialData }: { initialData: Dashbo
 
     startTransition(async () => {
       try {
-        const toServer = {
+        const toServer = taskCreateSchema.parse({
           ...values,
           deadline: toUtcDeadlineISOString(values.deadline),
-        };
+        });
         await updateTask({ _id: taskId, ...toServer });
         
         const clientToday = new Date().toLocaleDateString("en-CA");
         const summary = await getDashboardSummary(clientToday);
-        setOverrideSummary(summary as DashboardSummary);
+        setOverrideSummary(summary as unknown as DashboardSummary);
       } catch (err) {
         console.error("Failed to update task", err);
       }
