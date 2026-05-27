@@ -21,8 +21,8 @@ export interface HabitDTO {
   description?: string;
   targetTime?: string | null;
   completedDates: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 export interface DashboardSummary {
