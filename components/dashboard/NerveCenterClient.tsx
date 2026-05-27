@@ -1,18 +1,27 @@
 "use client";
 
-import { useOptimistic, startTransition, useState, useEffect } from "react";
+import { useOptimistic, useTransition, useState, useEffect } from "react";
 import { checkOffHabit } from "@/lib/actions/habit.actions";
-import { setTaskCompleted } from "@/lib/actions/task.actions";
+import { setTaskCompleted, updateTask } from "@/lib/actions/task.actions";
 import { getDashboardSummary } from "@/lib/actions/summary.actions";
 import HabitCarousel from "./HabitCarousel";
 import PriorityTaskList from "./PriorityTaskList";
 import AiIntelligenceSlot from "./AiIntelligenceSlot";
 import WeeklySnapshot from "./WeeklySnapshot";
 import { Activity } from "lucide-react";
+import TaskModal from "@/components/tasks/TaskModal";
+import HabitAnalyticsDrawer from "@/components/habits/HabitAnalyticsDrawer";
+import { toLocalDateTimeInputValue, toUtcDeadlineISOString } from "@/lib/utils/task-deadline";
 
 export default function NerveCenterClient({ initialData }: { initialData: any }) {
   const [overrideSummary, setOverrideSummary] = useState<any>(null);
   const activeData = overrideSummary || initialData;
+  const [isPending, startTransition] = useTransition();
+
+  const [editingTask, setEditingTask] = useState<any | null>(null);
+  const [viewingHabit, setViewingHabit] = useState<any | null>(null);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isHabitDrawerOpen, setIsHabitDrawerOpen] = useState(false);
 
   const [optHabits, removeOptHabit] = useOptimistic(
     activeData.pendingHabits,
@@ -65,6 +74,31 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
     }
   };
 
+  const handleTaskSubmit = (values: any) => {
+    if (!editingTask) return;
+    const taskId = editingTask._id;
+
+    // Instantly close modal to protect responsive UX
+    setIsTaskModalOpen(false);
+    setEditingTask(null);
+
+    startTransition(async () => {
+      try {
+        const toServer = {
+          ...values,
+          deadline: toUtcDeadlineISOString(values.deadline),
+        };
+        await updateTask({ _id: taskId, ...toServer });
+        
+        const clientToday = new Date().toLocaleDateString("en-CA");
+        const summary = await getDashboardSummary(clientToday);
+        setOverrideSummary(summary);
+      } catch (err) {
+        console.error("Failed to update task", err);
+      }
+    });
+  };
+
   const isDoubleEmpty = optHabits.length === 0 && optTasks.length === 0;
 
   return (
@@ -98,11 +132,26 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
           {/* Main Content Area (Habit Carousel + Tasks) */}
           <div className="lg:col-span-8 space-y-10 min-w-0">
             {optHabits.length > 0 && (
-              <HabitCarousel habits={optHabits} onCheckOff={handleCheckOffHabit} todayStr={activeData.todayStr} />
+              <HabitCarousel
+                habits={optHabits}
+                onCheckOff={handleCheckOffHabit}
+                todayStr={activeData.todayStr}
+                onHabitClick={(habit) => {
+                  setViewingHabit(habit);
+                  setIsHabitDrawerOpen(true);
+                }}
+              />
             )}
 
             {optTasks.length > 0 && (
-              <PriorityTaskList tasks={optTasks} onComplete={handleCompleteTask} />
+              <PriorityTaskList
+                tasks={optTasks}
+                onComplete={handleCompleteTask}
+                onTaskClick={(task) => {
+                  setEditingTask(task);
+                  setIsTaskModalOpen(true);
+                }}
+              />
             )}
           </div>
 
@@ -112,6 +161,34 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
           </div>
         </div>
       )}
+
+      {isTaskModalOpen && editingTask && (
+        <TaskModal
+          key={editingTask._id}
+          busy={isPending}
+          initialValues={{
+            title: editingTask.title,
+            description: editingTask.description ?? "",
+            priority: editingTask.priority,
+            privacyMode: editingTask.privacyMode,
+            deadline: editingTask.deadline
+              ? toLocalDateTimeInputValue(new Date(editingTask.deadline))
+              : "",
+          }}
+          onClose={() => {
+            setIsTaskModalOpen(false);
+            setEditingTask(null);
+          }}
+          onSubmit={handleTaskSubmit}
+        />
+      )}
+
+      <HabitAnalyticsDrawer
+        isOpen={isHabitDrawerOpen}
+        onOpenChange={setIsHabitDrawerOpen}
+        habit={viewingHabit}
+        todayStr={activeData.todayStr}
+      />
     </div>
   );
 }

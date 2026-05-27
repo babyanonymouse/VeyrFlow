@@ -331,8 +331,8 @@ export default function TaskModal({
 
       <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
         <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 z-[70] bg-black/60" />
-          <Drawer.Content className="fixed inset-x-0 bottom-0 z-[80] rounded-t-2xl border border-zinc-800 bg-zinc-950 p-4 shadow-2xl">
+          <Drawer.Overlay className="fixed inset-0 z-70 bg-black/60" />
+          <Drawer.Content className="fixed inset-x-0 bottom-0 z-80 rounded-t-2xl border border-zinc-800 bg-zinc-950 p-4 shadow-2xl">
             <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-zinc-700" />
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">

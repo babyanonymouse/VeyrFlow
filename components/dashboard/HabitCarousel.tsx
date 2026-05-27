@@ -29,10 +29,12 @@ export default function HabitCarousel({
   habits,
   onCheckOff,
   todayStr,
+  onHabitClick,
 }: {
   habits: any[];
   onCheckOff: (id: string) => void;
   todayStr: string;
+  onHabitClick?: (habit: any) => void;
 }) {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -53,7 +55,8 @@ export default function HabitCarousel({
             return (
               <div
                 key={habit._id}
-                className="snap-start shrink-0 w-[85%] sm:w-70 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col relative overflow-hidden group min-h-35"
+                onClick={() => onHabitClick?.(habit)}
+                className="snap-start shrink-0 w-[85%] sm:w-70 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col relative overflow-hidden group min-h-35 cursor-pointer"
               >
                 {/* Glow */}
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none" />
@@ -103,7 +106,10 @@ export default function HabitCarousel({
                   </div>
 
                   <button
-                    onClick={() => onCheckOff(habit._id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCheckOff(habit._id);
+                    }}
                     className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-semibold text-sm hover:bg-emerald-500 hover:border-emerald-500 hover:text-emerald-950 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-900 shadow-sm cursor-pointer"
                     title="Check Off"
                   >
