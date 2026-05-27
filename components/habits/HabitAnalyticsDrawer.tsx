@@ -43,8 +43,8 @@ export default function HabitAnalyticsDrawer({
   return (
     <Drawer.Root open={isOpen} onOpenChange={onOpenChange}>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 z-[70] bg-black/60" />
-        <Drawer.Content className="fixed inset-x-0 bottom-0 z-[80] rounded-t-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-2xl max-w-md mx-auto outline-none">
+        <Drawer.Overlay className="fixed inset-0 z-70 bg-black/60" />
+        <Drawer.Content className="fixed inset-x-0 bottom-0 z-80 rounded-t-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-2xl max-w-md mx-auto outline-none">
           {/* Drawer handle */}
           <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-zinc-855 bg-zinc-800" />
           
