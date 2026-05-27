@@ -25,20 +25,29 @@ function getTargetTimeStatus(targetTime: string): { isDue: boolean; formatted: s
   return { isDue, formatted };
 }
 
+interface HabitDTO {
+  _id: string;
+  title: string;
+  description?: string;
+  targetTime?: string | null;
+  completedDates: string[];
+}
+
 export default function HabitCarousel({
   habits,
   onCheckOff,
   todayStr,
   onHabitClick,
 }: {
-  habits: any[];
+  habits: HabitDTO[];
   onCheckOff: (id: string) => void;
   todayStr: string;
-  onHabitClick?: (habit: any) => void;
+  onHabitClick?: (habit: HabitDTO) => void;
 }) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -50,7 +59,7 @@ export default function HabitCarousel({
       {/* Container to allow full width scroll on mobile but neat fit on desktop */}
       <div className="-mx-6 px-6 md:mx-0 md:px-0">
         <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory pt-1 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {habits.map((habit: any) => {
+          {habits.map((habit: HabitDTO) => {
             const currentStreak = calculateStreak(habit.completedDates || [], todayStr);
             return (
               <div

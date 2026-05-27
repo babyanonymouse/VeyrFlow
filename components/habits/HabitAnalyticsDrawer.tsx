@@ -7,10 +7,18 @@ import { Flame, Clock, CalendarDays, X, Settings } from "lucide-react";
 import { calculateStreak } from "@/lib/utils/date";
 import Link from "next/link";
 
+interface HabitDTO {
+  _id: string;
+  title: string;
+  description?: string;
+  targetTime?: string | null;
+  completedDates: string[];
+}
+
 interface HabitAnalyticsDrawerProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  habit: any;
+  habit: HabitDTO | null;
   todayStr: string;
 }
 
@@ -28,7 +36,7 @@ export default function HabitAnalyticsDrawer({
   const completedDays = useMemo(() => {
     if (!habit?.completedDates) return [];
     return habit.completedDates.map((dateStr: string) => new Date(`${dateStr}T00:00:00`));
-  }, [habit?.completedDates]);
+  }, [habit]);
 
   if (!habit) return null;
 

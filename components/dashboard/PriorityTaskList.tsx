@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Calendar } from "lucide-react";
+import type { TaskDTO } from "@/lib/actions/task.actions";
 
 function formatTaskDeadline(deadlineStr: string) {
   const d = new Date(deadlineStr);
@@ -45,13 +46,14 @@ export default function PriorityTaskList({
   onComplete,
   onTaskClick,
 }: {
-  tasks: any[];
+  tasks: TaskDTO[];
   onComplete: (id: string) => void;
-  onTaskClick?: (task: any) => void;
+  onTaskClick?: (task: TaskDTO) => void;
 }) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -61,7 +63,7 @@ export default function PriorityTaskList({
         Priority Tasks
       </h2>
       <div className="grid gap-3">
-        {tasks.map((task: any) => {
+        {tasks.map((task: TaskDTO) => {
           const isOverdue = isMounted && task.deadline && new Date(task.deadline).getTime() < new Date().setHours(0, 0, 0, 0);
 
           return (

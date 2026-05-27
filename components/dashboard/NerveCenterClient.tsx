@@ -12,32 +12,55 @@ import { Activity } from "lucide-react";
 import TaskModal from "@/components/tasks/TaskModal";
 import HabitAnalyticsDrawer from "@/components/habits/HabitAnalyticsDrawer";
 import { toLocalDateTimeInputValue, toUtcDeadlineISOString } from "@/lib/utils/task-deadline";
+import type { TaskDTO } from "@/lib/actions/task.actions";
 
-export default function NerveCenterClient({ initialData }: { initialData: any }) {
-  const [overrideSummary, setOverrideSummary] = useState<any>(null);
+export interface HabitDTO {
+  _id: string;
+  title: string;
+  description?: string;
+  targetTime?: string | null;
+  completedDates: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface DashboardSummary {
+  todayStr: string;
+  greeting: string;
+  pendingHabits: HabitDTO[];
+  priorityTasks: TaskDTO[];
+  weeklySnapshot: {
+    dates: string[];
+    taskVelocity: number[];
+    habitVelocity: number[];
+  };
+}
+
+export default function NerveCenterClient({ initialData }: { initialData: DashboardSummary }) {
+  const [overrideSummary, setOverrideSummary] = useState<DashboardSummary | null>(null);
   const activeData = overrideSummary || initialData;
   const [isPending, startTransition] = useTransition();
 
-  const [editingTask, setEditingTask] = useState<any | null>(null);
-  const [viewingHabit, setViewingHabit] = useState<any | null>(null);
+  const [editingTask, setEditingTask] = useState<TaskDTO | null>(null);
+  const [viewingHabit, setViewingHabit] = useState<HabitDTO | null>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isHabitDrawerOpen, setIsHabitDrawerOpen] = useState(false);
 
   const [optHabits, removeOptHabit] = useOptimistic(
     activeData.pendingHabits,
-    (state: any[], habitId: string) => state.filter((h) => h._id !== habitId)
+    (state: HabitDTO[], habitId: string) => state.filter((h) => h._id !== habitId)
   );
 
   const [optTasks, removeOptTask] = useOptimistic(
     activeData.priorityTasks,
-    (state: any[], taskId: string) => state.filter((t) => t._id !== taskId)
+    (state: TaskDTO[], taskId: string) => state.filter((t) => t._id !== taskId)
   );
 
   useEffect(() => {
     const clientToday = new Date().toLocaleDateString("en-CA");
     if (clientToday !== initialData.todayStr) {
       getDashboardSummary(clientToday).then((summary) => {
-        setOverrideSummary(summary);
+        setOverrideSummary(summary as unknown as DashboardSummary);
       });
     }
   }, [initialData.todayStr]);
@@ -51,7 +74,7 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
       await checkOffHabit({ habitId, localDateString: clientToday });
       if (clientToday !== initialData.todayStr) {
         const summary = await getDashboardSummary(clientToday);
-        setOverrideSummary(summary);
+        setOverrideSummary(summary as unknown as DashboardSummary);
       }
     } catch (e) {
       console.error("Failed to check off habit optimistically", e);
@@ -67,14 +90,20 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
       const clientToday = new Date().toLocaleDateString("en-CA");
       if (clientToday !== initialData.todayStr) {
         const summary = await getDashboardSummary(clientToday);
-        setOverrideSummary(summary);
+        setOverrideSummary(summary as unknown as DashboardSummary);
       }
     } catch (e) {
       console.error("Failed to complete task optimistically", e);
     }
   };
 
-  const handleTaskSubmit = (values: any) => {
+  const handleTaskSubmit = (values: {
+    title: string;
+    description?: string;
+    priority: "low" | "medium" | "high";
+    privacyMode: boolean;
+    deadline?: string;
+  }) => {
     if (!editingTask) return;
     const taskId = editingTask._id;
 
@@ -92,7 +121,7 @@ export default function NerveCenterClient({ initialData }: { initialData: any })
         
         const clientToday = new Date().toLocaleDateString("en-CA");
         const summary = await getDashboardSummary(clientToday);
-        setOverrideSummary(summary);
+        setOverrideSummary(summary as DashboardSummary);
       } catch (err) {
         console.error("Failed to update task", err);
       }
