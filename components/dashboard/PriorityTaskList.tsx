@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Calendar } from "lucide-react";
+import type { TaskDTO } from "@/lib/actions/task.actions";
 
 function formatTaskDeadline(deadlineStr: string) {
   const d = new Date(deadlineStr);
@@ -43,13 +44,16 @@ function formatTaskDeadline(deadlineStr: string) {
 export default function PriorityTaskList({
   tasks,
   onComplete,
+  onTaskClick,
 }: {
-  tasks: any[];
+  tasks: TaskDTO[];
   onComplete: (id: string) => void;
+  onTaskClick?: (task: TaskDTO) => void;
 }) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -59,16 +63,20 @@ export default function PriorityTaskList({
         Priority Tasks
       </h2>
       <div className="grid gap-3">
-        {tasks.map((task: any) => {
+        {tasks.map((task: TaskDTO) => {
           const isOverdue = isMounted && task.deadline && new Date(task.deadline).getTime() < new Date().setHours(0, 0, 0, 0);
 
           return (
             <div
               key={task._id}
-              className="flex items-start gap-3 bg-zinc-900/50 border border-zinc-800/80 rounded-xl p-4 transition-colors hover:bg-zinc-900 group"
+              onClick={() => onTaskClick?.(task)}
+              className="flex items-start gap-3 bg-zinc-900/50 border border-zinc-800/80 rounded-xl p-4 transition-colors hover:bg-zinc-900 group cursor-pointer"
             >
               <button
-                onClick={() => onComplete(task._id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onComplete(task._id);
+                }}
                 className="mt-0.5 shrink-0 flex items-center justify-center w-5 h-5 rounded border border-zinc-600 bg-zinc-950 text-transparent hover:bg-emerald-500/20 hover:border-emerald-500 hover:text-emerald-400 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 title="Complete Task"
               >

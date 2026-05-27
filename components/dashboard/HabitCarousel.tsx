@@ -25,18 +25,29 @@ function getTargetTimeStatus(targetTime: string): { isDue: boolean; formatted: s
   return { isDue, formatted };
 }
 
+interface HabitDTO {
+  _id: string;
+  title: string;
+  description?: string;
+  targetTime?: string | null;
+  completedDates: string[];
+}
+
 export default function HabitCarousel({
   habits,
   onCheckOff,
   todayStr,
+  onHabitClick,
 }: {
-  habits: any[];
+  habits: HabitDTO[];
   onCheckOff: (id: string) => void;
   todayStr: string;
+  onHabitClick?: (habit: HabitDTO) => void;
 }) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -48,12 +59,13 @@ export default function HabitCarousel({
       {/* Container to allow full width scroll on mobile but neat fit on desktop */}
       <div className="-mx-6 px-6 md:mx-0 md:px-0">
         <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory pt-1 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {habits.map((habit: any) => {
+          {habits.map((habit: HabitDTO) => {
             const currentStreak = calculateStreak(habit.completedDates || [], todayStr);
             return (
               <div
                 key={habit._id}
-                className="snap-start shrink-0 w-[85%] sm:w-70 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col relative overflow-hidden group min-h-35"
+                onClick={() => onHabitClick?.(habit)}
+                className="snap-start shrink-0 w-[85%] sm:w-70 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col relative overflow-hidden group min-h-35 cursor-pointer"
               >
                 {/* Glow */}
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none" />
@@ -103,7 +115,10 @@ export default function HabitCarousel({
                   </div>
 
                   <button
-                    onClick={() => onCheckOff(habit._id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCheckOff(habit._id);
+                    }}
                     className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-semibold text-sm hover:bg-emerald-500 hover:border-emerald-500 hover:text-emerald-950 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-900 shadow-sm cursor-pointer"
                     title="Check Off"
                   >
