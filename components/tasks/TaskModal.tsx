@@ -48,6 +48,7 @@ export default function TaskModal({
   const [privacyMode, setPrivacyMode] = useState(defaults.privacyMode);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [parsedDateText, setParsedDateText] = useState<string | null>(null);
+  const [ignoredMatches, setIgnoredMatches] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const selectedDate = useMemo(() => {
@@ -80,29 +81,43 @@ export default function TaskModal({
   }
 
   function handleTitleChange(nextTitle: string) {
+    setTitle(nextTitle);
+
+    // Keep ignoredMatches up-to-date: remove phrases that are no longer in the input
+    const cleanIgnored = ignoredMatches.filter((phrase) =>
+      nextTitle.toLowerCase().includes(phrase.toLowerCase())
+    );
+    if (cleanIgnored.length !== ignoredMatches.length) {
+      setIgnoredMatches(cleanIgnored);
+    }
+
     const parsed = chrono.parse(nextTitle, new Date(), { forwardDate: true });
-    if (!parsed[0] || !parsed[0].start) {
-      setTitle(nextTitle);
+    
+    // Find the first match that isn't ignored
+    const activeMatch = parsed.find((match) => {
+      const matchText = match.text.trim().toLowerCase();
+      return !cleanIgnored.some((ignored) => ignored.toLowerCase() === matchText);
+    });
+
+    if (!activeMatch) {
+      if (parsedDateText) {
+        setDeadline("");
+        setParsedDateText(null);
+      }
       return;
     }
 
-    const match = parsed[0];
-    const cleanTitle = `${nextTitle.slice(0, match.index)} ${nextTitle.slice(
-      match.index + match.text.length
-    )}`
-      .replace(/\s+/g, " ")
-      .trim();
-
-    setTitle(cleanTitle);
-    setDeadline(toLocalDateTimeInputValue(match.start.date()));
-    setParsedDateText(match.text.trim());
+    const matchText = activeMatch.text.trim();
+    if (parsedDateText !== matchText) {
+      setDeadline(toLocalDateTimeInputValue(activeMatch.start.date()));
+      setParsedDateText(matchText);
+    }
     setErrors((prev) => ({ ...prev, title: "" }));
   }
 
   function clearParsedDate() {
     if (!parsedDateText) return;
-    const restoredTitle = [title.trim(), parsedDateText].filter(Boolean).join(" ");
-    setTitle(restoredTitle);
+    setIgnoredMatches((prev) => [...prev, parsedDateText]);
     setDeadline("");
     setParsedDateText(null);
   }
@@ -188,36 +203,38 @@ export default function TaskModal({
             <label className="block text-sm font-medium text-zinc-200">
               Title
             </label>
-            <input
-              value={title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              className="mt-1 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-600"
-              placeholder="e.g. Implement task CRUD"
-              maxLength={100}
-              autoFocus
-            />
-            {deadline ? (
-              <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-indigo-500/30 bg-indigo-500/20 pr-1 text-xs font-medium text-indigo-100">
-                <button
-                  type="button"
-                  onClick={() => setDrawerOpen(true)}
-                  className="inline-flex items-center gap-2 px-3 py-1 transition-colors hover:bg-indigo-500/20"
-                >
-                  <CalendarDays size={14} />
-                  <span>{deadlinePillLabel}</span>
-                </button>
-                {parsedDateText ? (
+            <div className="relative mt-1 flex items-center">
+              <input
+                value={title}
+                onChange={(e) => handleTitleChange(e.target.value)}
+                className={`w-full rounded-md border border-zinc-800 bg-zinc-950 pl-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-600 ${
+                  deadline && parsedDateText ? "pr-40" : "pr-3"
+                }`}
+                placeholder="e.g. Implement task CRUD"
+                maxLength={100}
+                autoFocus
+              />
+              {deadline && parsedDateText ? (
+                <div className="absolute right-2 flex items-center gap-1 rounded-full border border-indigo-500/30 bg-indigo-500/20 pr-1 text-xs font-medium text-indigo-100">
+                  <button
+                    type="button"
+                    onClick={() => setDrawerOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 transition-colors hover:bg-indigo-500/20 rounded-l-full"
+                  >
+                    <CalendarDays size={12} />
+                    <span>{deadlinePillLabel}</span>
+                  </button>
                   <button
                     type="button"
                     onClick={clearParsedDate}
-                    className="rounded-full p-1 transition-colors hover:bg-indigo-500/40"
+                    className="rounded-full p-0.5 transition-colors hover:bg-indigo-500/40"
                     aria-label="Remove parsed date"
                   >
                     <X size={12} />
                   </button>
-                ) : null}
-              </div>
-            ) : null}
+                </div>
+              ) : null}
+            </div>
             {errors.title ? (
               <p className="mt-1 text-xs text-red-400">{errors.title}</p>
             ) : null}
