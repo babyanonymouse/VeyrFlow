@@ -31,9 +31,9 @@ export interface DashboardSummary {
   pendingHabits: HabitDTO[];
   priorityTasks: TaskDTO[];
   weeklySnapshot: {
-    dates: string[];
-    taskVelocity: number[];
-    habitVelocity: number[];
+    tasksCompletedThisWeek: number;
+    habitCompletionRate: number;
+    bestStreak: number;
   };
 }
 
