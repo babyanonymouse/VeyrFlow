@@ -21,11 +21,6 @@ export const metadata: Metadata = {
   title: "HabitFlow",
   description: "A production-grade app to track tasks, habits, and recurring goals.",
   manifest: "/manifest.json",
-  icons: {
-    icon: "/icon-192x192.png",
-    shortcut: "/icon-192x192.png",
-    apple: "/apple-touch-icon.png",
-  },
   appleWebApp: {
     capable: true,
     title: "HabitFlow",
@@ -53,13 +48,13 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
           <NextTopLoader
-            color="#6366f1"
+            color="#818cf8"
             showSpinner={false}
             crawlSpeed={200}
-            height={3}
+            height={2}
             easing="ease"
             speed={200}
-            shadow="0 0 10px #6366f1,0 0 5px #6366f1"
+            shadow="0 0 10px #818cf8,0 0 5px #818cf8"
           />
           <SerwistRegistrar>
             {children}
