@@ -25,11 +25,6 @@ export const metadata: Metadata = {
   title: "HabitFlow",
   description: "A production-grade app to track tasks, habits, and recurring goals.",
   manifest: "/manifest.json",
-  icons: {
-    icon: "/icon-192x192.png",
-    shortcut: "/icon-192x192.png",
-    apple: "/apple-touch-icon.png",
-  },
   appleWebApp: {
     capable: true,
     title: "HabitFlow",
