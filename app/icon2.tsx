@@ -5,8 +5,8 @@ export const runtime = "edge";
 
 // Image metadata
 export const size = {
-  width: 256,
-  height: 256,
+  width: 512,
+  height: 512,
 };
 export const contentType = "image/png";
 
@@ -25,8 +25,8 @@ export default function Icon() {
         }}
       >
         <svg
-          width="256"
-          height="256"
+          width="512"
+          height="512"
           viewBox="0 0 100 100"
           fill="none"
           style={{ width: "100%", height: "100%" }}
