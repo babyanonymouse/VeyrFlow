@@ -169,13 +169,7 @@ export default function TaskModal({
 
   return (
     <div className="fixed inset-0 z-50">
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/60 cursor-pointer"
-        onClick={onClose}
-        aria-label="Close modal backdrop"
-        disabled={busy}
-      />
+      <div className="absolute inset-0 bg-black/60" />
 
       <div className="absolute left-1/2 top-1/2 w-[min(92vw,560px)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl">
         <div className="flex items-start justify-between gap-4">
