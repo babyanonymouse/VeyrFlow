@@ -2,6 +2,7 @@
 
 import { useMemo, useOptimistic, useState, useTransition } from "react";
 import { Plus, CheckSquare, Loader2 } from "lucide-react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import TaskListItem from "./TaskListItem";
 import EmptyState from "@/components/ui/EmptyState";
 import type { TaskDTO } from "@/lib/actions/task.actions";
@@ -19,6 +20,7 @@ import {
 } from "@/lib/utils/task-deadline";
 
 export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] }) {
+  const [listRef] = useAutoAnimate();
   const [tasks, setTasks] = useState<TaskDTO[]>(initialTasks);
   const [optimisticTasks, setOptimisticTasks] = useOptimistic(
     tasks,
@@ -130,7 +132,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
         <button
           type="button"
           onClick={openCreate}
-          className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-transform duration-75"
           disabled={isModalPending}
         >
           {isModalPending ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
@@ -145,7 +147,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
           description="Create your first task to start tracking your work."
         />
       ) : (
-        <ul className="grid gap-3">
+        <ul ref={listRef} className="grid gap-3">
           {sorted.map((t) => (
             <TaskListItem
               key={t._id}

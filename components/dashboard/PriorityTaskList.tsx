@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Calendar } from "lucide-react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import type { TaskDTO } from "@/lib/actions/task.actions";
 
 function formatTaskDeadline(deadlineStr: string) {
@@ -50,6 +51,7 @@ export default function PriorityTaskList({
   onComplete: (id: string) => void;
   onTaskClick?: (task: TaskDTO) => void;
 }) {
+  const [parentRef] = useAutoAnimate();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -62,7 +64,7 @@ export default function PriorityTaskList({
       <h2 className="text-lg font-semibold text-zinc-100 flex items-center gap-2">
         Priority Tasks
       </h2>
-      <div className="grid gap-3">
+      <div ref={parentRef} className="grid gap-3">
         {tasks.map((task: TaskDTO) => {
           const isOverdue = isMounted && task.deadline && new Date(task.deadline).getTime() < new Date().setHours(0, 0, 0, 0);
 
@@ -77,7 +79,7 @@ export default function PriorityTaskList({
                   e.stopPropagation();
                   onComplete(task._id);
                 }}
-                className="mt-0.5 shrink-0 flex items-center justify-center w-5 h-5 rounded border border-zinc-600 bg-zinc-950 text-transparent hover:bg-emerald-500/20 hover:border-emerald-500 hover:text-emerald-400 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="mt-0.5 shrink-0 flex items-center justify-center w-5 h-5 rounded border border-zinc-600 bg-zinc-950 text-transparent hover:bg-emerald-500/20 hover:border-emerald-500 hover:text-emerald-400 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 active:scale-[0.98] transition-transform duration-75"
                 title="Complete Task"
               >
                 <Check

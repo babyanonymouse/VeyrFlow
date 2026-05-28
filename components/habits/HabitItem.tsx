@@ -1,6 +1,6 @@
 "use client";
 
-import { useOptimistic, useState, startTransition } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { Flame, Check, Trash2, Loader2, Clock } from "lucide-react";
 import { checkOffHabit, deleteHabit } from "@/lib/actions/habit.actions";
 import { calculateStreak } from "@/lib/utils/date";
@@ -8,6 +8,7 @@ import ConsistencyHeatmap from "../charts/ConsistencyHeatmap";
 
 export default function HabitItem({ habit }: { habit: any }) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPending, startTransition] = useTransition();
   
   // To avoid constant re-evaluation of Date() across renders triggering hydration errors,
   // we initialize today's string on component mount via state, but Next.js usually
@@ -29,21 +30,21 @@ export default function HabitItem({ habit }: { habit: any }) {
   const currentStreak = calculateStreak(optimisticHabit.completedDates, todayStr);
   const isCompletedToday = optimisticHabit.completedDates.includes(todayStr);
 
-  async function handleCheckOff() {
+  function handleCheckOff() {
     if (isCompletedToday) return;
 
-    // Instantly update the UI — must be inside startTransition (React 19 useOptimistic contract)
-    startTransition(() => {
+    startTransition(async () => {
+      // Instantly update the UI — must be inside startTransition (React 19 useOptimistic contract)
       setOptimisticHabit(todayStr);
-    });
 
-    try {
-      await checkOffHabit({ habitId: habit._id, localDateString: todayStr });
-    } catch (error) {
-      console.error("Failed to check off habit:", error);
-      // Optional: show a toast notification here
-      // The optimistic state will revert automatically because it's tied to the server state
-    }
+      try {
+        await checkOffHabit({ habitId: habit._id, localDateString: todayStr });
+      } catch (error) {
+        console.error("Failed to check off habit:", error);
+        // Optional: show a toast notification here
+        // The optimistic state will revert automatically because it's tied to the server state
+      }
+    });
   }
 
   async function handleDelete() {
@@ -57,7 +58,7 @@ export default function HabitItem({ habit }: { habit: any }) {
   }
 
   return (
-    <div className="flex bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-colors group relative overflow-hidden">
+    <div className={`flex bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-all duration-300 group relative overflow-hidden ${isPending ? "opacity-60" : ""}`}>
       {/* Decorative Glow */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-2xl rounded-full pointer-events-none" />
 
@@ -122,14 +123,19 @@ export default function HabitItem({ habit }: { habit: any }) {
 
           <button
             onClick={handleCheckOff}
-            disabled={isCompletedToday}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-bold text-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 ${
-              isCompletedToday
+            disabled={isCompletedToday || isPending}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-bold text-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 active:scale-[0.98] transition-transform duration-75 ${
+              isCompletedToday || isPending
                 ? "bg-zinc-800 text-zinc-500 border border-zinc-700 cursor-not-allowed"
                 : "bg-emerald-500 hover:bg-emerald-400 text-zinc-950 shadow-[0_0_20px_-5px_rgba(16,185,129,0.4)]"
             }`}
           >
-            {isCompletedToday ? (
+            {isPending ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Saving...
+              </>
+            ) : isCompletedToday ? (
               <>
                 <Check size={16} />
                 Done for today

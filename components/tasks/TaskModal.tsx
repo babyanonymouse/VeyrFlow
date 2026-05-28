@@ -169,13 +169,7 @@ export default function TaskModal({
 
   return (
     <div className="fixed inset-0 z-50">
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/60 cursor-pointer"
-        onClick={onClose}
-        aria-label="Close modal backdrop"
-        disabled={busy}
-      />
+      <div className="absolute inset-0 bg-black/60" />
 
       <div className="absolute left-1/2 top-1/2 w-[min(92vw,560px)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xl">
         <div className="flex items-start justify-between gap-4">
@@ -191,7 +185,7 @@ export default function TaskModal({
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="rounded-md border border-zinc-800 bg-zinc-950 p-2 text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="rounded-md border border-zinc-800 bg-zinc-950 p-2 text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-transform duration-75"
             aria-label="Close"
           >
             <X size={16} />
@@ -314,7 +308,7 @@ export default function TaskModal({
             type="button"
             onClick={onClose}
             disabled={busy}
-            className="rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="rounded-md border border-zinc-800 bg-zinc-950 px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-transform duration-75"
           >
             Cancel
           </button>
@@ -322,7 +316,7 @@ export default function TaskModal({
             type="button"
             onClick={submit}
             disabled={busy}
-            className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-transform duration-75"
           >
             {initialValues ? "Save" : "Create"}
           </button>
@@ -333,20 +327,22 @@ export default function TaskModal({
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 z-70 bg-black/60" />
           <Drawer.Content className="fixed inset-x-0 bottom-0 z-80 rounded-t-2xl border border-zinc-800 bg-zinc-950 p-4 shadow-2xl">
+            <Drawer.Title className="sr-only">Set Deadline</Drawer.Title>
+            <Drawer.Description className="sr-only">Choose a date and time preset for the task</Drawer.Description>
             <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-zinc-700" />
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => applyDate(new Date(), true)}
-                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800"
+                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75"
                 >
                   Today
                 </button>
                 <button
                   type="button"
                   onClick={() => applyDate(addDays(new Date(), 1), true)}
-                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800"
+                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75"
                 >
                   Tomorrow
                 </button>
@@ -358,14 +354,14 @@ export default function TaskModal({
                     const daysUntilSaturday = day === 6 || day === 0 ? 0 : 6 - day;
                     applyDate(addDays(today, daysUntilSaturday), true);
                   }}
-                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800"
+                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75"
                 >
                   This Weekend
                 </button>
                 <button
                   type="button"
                   onClick={() => applyDate(startOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }), true)}
-                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800"
+                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75"
                 >
                   Next Week
                 </button>
