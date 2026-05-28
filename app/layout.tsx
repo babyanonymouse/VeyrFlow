@@ -20,7 +20,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "HabitFlow",
   description: "A production-grade app to track tasks, habits, and recurring goals.",
-  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     title: "HabitFlow",
