@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Flame, Check, Clock } from "lucide-react";
 import { calculateStreak } from "@/lib/utils/date";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 function getTargetTimeStatus(targetTime: string): { isDue: boolean; formatted: string } {
   const [hStr, mStr] = targetTime.split(":");
@@ -44,6 +45,7 @@ export default function HabitCarousel({
   todayStr: string;
   onHabitClick?: (habit: HabitDTO) => void;
 }) {
+  const [parentRef] = useAutoAnimate();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function HabitCarousel({
       </h2>
       {/* Container to allow full width scroll on mobile but neat fit on desktop */}
       <div className="-mx-6 px-6 md:mx-0 md:px-0">
-        <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory pt-1 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div ref={parentRef} className="flex overflow-x-auto gap-4 snap-x snap-mandatory pt-1 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {habits.map((habit: HabitDTO) => {
             const currentStreak = calculateStreak(habit.completedDates || [], todayStr);
             return (
@@ -119,7 +121,7 @@ export default function HabitCarousel({
                       e.stopPropagation();
                       onCheckOff(habit._id);
                     }}
-                    className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-semibold text-sm hover:bg-emerald-500 hover:border-emerald-500 hover:text-emerald-950 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-900 shadow-sm cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-semibold text-sm hover:bg-emerald-500 hover:border-emerald-500 hover:text-emerald-950 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-900 shadow-sm cursor-pointer active:scale-[0.98] transition-transform duration-75"
                     title="Check Off"
                   >
                     <Check size={16} strokeWidth={2.5} />

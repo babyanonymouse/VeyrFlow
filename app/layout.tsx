@@ -1,13 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import {
-  ClerkProvider,
-  SignInButton,
-  UserButton,
-  Show,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import NextTopLoader from "nextjs-toploader";
+import { Toaster } from "sonner";
 import SerwistRegistrar from "./serwist/SerwistRegistrar";
 import "./globals.css";
 
@@ -54,12 +50,28 @@ export default function RootLayout({
           <NextTopLoader
             color="#818cf8"
             showSpinner={false}
-            height={3}
-            crawlSpeed={160}
-            speed={220}
+            crawlSpeed={200}
+            height={2}
+            easing="ease"
+            speed={200}
+            shadow="0 0 10px #818cf8,0 0 5px #818cf8"
           />
           <SerwistRegistrar>
             {children}
+            <Toaster 
+              position="top-right" 
+              toastOptions={{
+                classNames: {
+                  toast: 'group flex items-center bg-zinc-950/80 backdrop-blur-xl border border-indigo-500/20 text-zinc-100 shadow-2xl rounded-xl p-4',
+                  title: 'text-sm font-medium tracking-wide',
+                  description: 'text-xs text-zinc-400',
+                  actionButton: 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors',
+                  cancelButton: 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors',
+                  success: 'border-l-2 border-l-teal-400/50',
+                  error: 'border-l-2 border-l-red-400/50',
+                },
+              }} 
+            />
             <Analytics />
           </SerwistRegistrar>
         </body>

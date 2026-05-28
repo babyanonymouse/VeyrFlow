@@ -50,9 +50,15 @@ export default function HabitAnalyticsDrawer({
           
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h2 className="text-lg font-bold text-zinc-100 truncate">{habit.title}</h2>
-              {habit.description && (
-                <p className="mt-1 text-sm text-zinc-400 line-clamp-2">{habit.description}</p>
+              <Drawer.Title asChild>
+                <h2 className="text-lg font-bold text-zinc-100 truncate">{habit.title}</h2>
+              </Drawer.Title>
+              {habit.description ? (
+                <Drawer.Description asChild>
+                  <p className="mt-1 text-sm text-zinc-400 line-clamp-2">{habit.description}</p>
+                </Drawer.Description>
+              ) : (
+                <Drawer.Description className="sr-only">Habit analytics details</Drawer.Description>
               )}
             </div>
             <button
