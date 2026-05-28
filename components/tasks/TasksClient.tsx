@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useOptimistic, useState, useTransition } from "react";
-import { Plus, CheckSquare, Trash2, Pencil, Check } from "lucide-react";
+import { Plus, CheckSquare, Loader2 } from "lucide-react";
+import TaskListItem from "./TaskListItem";
 import EmptyState from "@/components/ui/EmptyState";
 import type { TaskDTO } from "@/lib/actions/task.actions";
 import {
@@ -17,25 +18,13 @@ import {
   toUtcDeadlineISOString,
 } from "@/lib/utils/task-deadline";
 
-function formatDeadline(deadlineStr: string): string {
-  const d = new Date(deadlineStr);
-  const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const hasTime = d.getHours() !== 0 || d.getMinutes() !== 0;
-  if (hasTime) {
-    const pad = (n: number) => String(n).padStart(2, "0");
-    const timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    return `due ${dateStr} at ${timeStr}`;
-  }
-  return `due ${dateStr}`;
-}
-
 export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] }) {
   const [tasks, setTasks] = useState<TaskDTO[]>(initialTasks);
   const [optimisticTasks, setOptimisticTasks] = useOptimistic(
     tasks,
     (state: TaskDTO[], next: TaskDTO[]) => next
   );
-  const [isPending, startTransition] = useTransition();
+  const [isModalPending, startModalTransition] = useTransition();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<TaskDTO | null>(null);
 
@@ -68,7 +57,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
   }
 
   function onSubmit(values: TaskModalValues) {
-    startTransition(async () => {
+    startModalTransition(async () => {
       // Convert local deadline to strict UTC ISO before validation/server action.
       const toServer = taskCreateSchema.parse({
         ...values,
@@ -91,60 +80,61 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
     });
   }
 
-  function onDelete(id: string) {
+  async function onDelete(id: string) {
     const next = optimisticTasks.filter((t) => t._id !== id);
-
-    // Next.js requires optimistic updates inside a transition or action.
-    startTransition(() => {
-      setOptimisticTasks(next);
-    });
-
-    startTransition(async () => {
+    setOptimisticTasks(next);
+    try {
       await deleteTask(id);
       setTasks((prev) => prev.filter((t) => t._id !== id));
-    });
+    } catch (err) {
+      console.error("Failed to delete task:", err);
+    }
   }
 
-  function onToggleComplete(task: TaskDTO) {
+  async function onToggleComplete(task: TaskDTO) {
     const nextCompleted = !task.isCompleted;
     const next = optimisticTasks.map((t) =>
       t._id === task._id ? { ...t, isCompleted: nextCompleted } : t
     );
-
-    // Next.js requires optimistic updates inside a transition or action.
-    startTransition(() => {
-      setOptimisticTasks(next);
-    });
-
-    startTransition(async () => {
+    setOptimisticTasks(next);
+    try {
       const updated = await setTaskCompleted({
         _id: task._id,
         isCompleted: nextCompleted,
       });
       setTasks((prev) => prev.map((t) => (t._id === updated._id ? updated : t)));
-      setOptimisticTasks(
-        next.map((t) => (t._id === updated._id ? updated : t))
-      );
-    });
+    } catch (err) {
+      console.error("Failed to toggle task completion:", err);
+    }
   }
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4" aria-busy={isModalPending}>
         <div>
           <h1 className="text-xl font-semibold text-zinc-100">Tasks</h1>
           <p className="text-sm text-zinc-500">
             Create, edit, and manage your tasks.
           </p>
+          {isModalPending ? (
+            <p
+              role="status"
+              aria-live="polite"
+              className="mt-1 inline-flex items-center gap-1.5 text-xs text-indigo-300"
+            >
+              <Loader2 size={12} className="animate-spin" />
+              Saving changes...
+            </p>
+          ) : null}
         </div>
         <button
           type="button"
           onClick={openCreate}
           className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-          disabled={isPending}
+          disabled={isModalPending}
         >
-          <Plus size={16} />
-          New Task
+          {isModalPending ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+          {isModalPending ? "Working..." : "New Task"}
         </button>
       </div>
 
@@ -157,79 +147,13 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
       ) : (
         <ul className="grid gap-3">
           {sorted.map((t) => (
-            <li
+            <TaskListItem
               key={t._id}
-              className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-4"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => onToggleComplete(t)}
-                      disabled={isPending}
-                      className={`inline-flex h-6 w-6 items-center justify-center rounded-md border transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${
-                        t.isCompleted
-                           ? "border-emerald-700 bg-emerald-900/30 text-emerald-200"
-                          : "border-zinc-700 bg-zinc-950 text-zinc-400 hover:bg-zinc-900"
-                      }`}
-                      aria-label={t.isCompleted ? "Mark incomplete" : "Mark complete"}
-                      title={t.isCompleted ? "Completed" : "Not completed"}
-                    >
-                      {t.isCompleted ? <Check size={14} /> : null}
-                    </button>
-                    <span className="rounded bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-300">
-                      {t.priority}
-                    </span>
-                    {t.privacyMode ? (
-                      <span className="rounded bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-300">
-                        private
-                      </span>
-                    ) : null}
-                    {t.deadline ? (
-                      <span className="rounded bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-300">
-                        {formatDeadline(t.deadline)}
-                      </span>
-                    ) : null}
-                  </div>
-                  <p
-                    className={`mt-2 truncate text-sm font-medium ${
-                      t.isCompleted ? "text-zinc-500 line-through" : "text-zinc-100"
-                    }`}
-                  >
-                    {t.title}
-                  </p>
-                  {t.description ? (
-                    <p className="mt-1 line-clamp-2 text-sm text-zinc-400">
-                      {t.description}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="flex shrink-0 items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => openEdit(t)}
-                    className="inline-flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                    disabled={isPending}
-                    aria-label="Edit task"
-                    title="Edit"
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onDelete(t._id)}
-                    className="inline-flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                    disabled={isPending}
-                    aria-label="Delete task"
-                    title="Delete"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            </li>
+              task={t}
+              onToggleComplete={onToggleComplete}
+              onDelete={onDelete}
+              onEdit={openEdit}
+            />
           ))}
         </ul>
       )}
@@ -237,7 +161,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
       {modalOpen ? (
         <TaskModal
           key={editing?._id ?? "create"}
-          busy={isPending}
+          busy={isModalPending}
           initialValues={
             editing
               ? {
@@ -252,7 +176,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
               : undefined
           }
           onClose={() => {
-            if (isPending) return;
+            if (isModalPending) return;
             setModalOpen(false);
             setEditing(null);
           }}

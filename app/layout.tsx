@@ -7,6 +7,7 @@ import {
   Show,
 } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
+import NextTopLoader from "nextjs-toploader";
 import SerwistRegistrar from "./serwist/SerwistRegistrar";
 import "./globals.css";
 
@@ -24,11 +25,6 @@ export const metadata: Metadata = {
   title: "HabitFlow",
   description: "A production-grade app to track tasks, habits, and recurring goals.",
   manifest: "/manifest.json",
-  icons: {
-    icon: "/icon-192x192.png",
-    shortcut: "/icon-192x192.png",
-    apple: "/apple-touch-icon.png",
-  },
   appleWebApp: {
     capable: true,
     title: "HabitFlow",
@@ -55,6 +51,13 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
+          <NextTopLoader
+            color="#818cf8"
+            showSpinner={false}
+            height={3}
+            crawlSpeed={160}
+            speed={220}
+          />
           <SerwistRegistrar>
             {children}
             <Analytics />
