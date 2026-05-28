@@ -70,7 +70,7 @@ export default function PwaInstallPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="relative overflow-hidden bg-zinc-950/80 backdrop-blur-xl border border-indigo-500/20 rounded-2xl p-4 shadow-2xl flex items-center justify-between gap-4">
+    <div className="relative overflow-hidden bg-zinc-950/80 backdrop-blur-xl border border-indigo-500/20 rounded-xl p-4 shadow-2xl flex items-center justify-between gap-4">
       {/* VeyrFlow Dynamic Logo Graphic background element */}
       <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/5 blur-2xl rounded-full pointer-events-none" />
 
@@ -81,15 +81,8 @@ export default function PwaInstallPrompt() {
         <div className="min-w-0 flex-1">
           <h3 className="text-sm font-bold text-zinc-100 tracking-wide">Install VeyrFlow</h3>
           {isIOS ? (
-            <p className="text-xs text-zinc-400 mt-1 leading-relaxed flex flex-wrap items-center gap-1.5">
-              To install, tap
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">
-                <Share size={12} className="text-indigo-400" /> Share
-              </span>
-              below, then select
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300">
-                Add to Home Screen <PlusSquare size={12} className="text-indigo-400" />
-              </span>
+            <p className="text-xs text-zinc-400 mt-1 leading-relaxed flex flex-wrap items-center gap-1">
+              To install, tap <Share size={14} className="inline text-indigo-400 mx-0.5" /> below, then select &apos;Add to Home Screen&apos; <PlusSquare size={14} className="inline text-indigo-400 mx-0.5" />.
             </p>
           ) : (
             <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
