@@ -34,7 +34,7 @@ export default function CreateHabitModal() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors active:scale-[0.98] transition-transform duration-75"
       >
         <Plus size={16} />
         New Habit
@@ -97,7 +97,7 @@ export default function CreateHabitModal() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors active:scale-[0.98] transition-transform duration-75"
               disabled={isLoading}
             >
               Cancel
@@ -105,7 +105,7 @@ export default function CreateHabitModal() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 active:scale-[0.98] transition-transform duration-75"
             >
               {isLoading && <Loader2 size={16} className="animate-spin" />}
               Create Habit

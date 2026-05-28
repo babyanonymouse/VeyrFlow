@@ -23,7 +23,7 @@ export default function BottomNav() {
         <Link
           key={href}
           href={href}
-          className={`flex flex-1 flex-col items-center gap-1 py-3 text-xs transition-colors ${
+          className={`flex flex-1 flex-col items-center gap-1 py-3 text-xs transition-colors active:scale-[0.98] transition-transform duration-75 ${
             isActive(path, href) ? "text-white" : "text-zinc-500 hover:text-white"
           }`}
         >

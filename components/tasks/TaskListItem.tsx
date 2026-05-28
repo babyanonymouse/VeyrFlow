@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { Check, Trash2, Pencil, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import type { TaskDTO } from "@/lib/actions/task.actions";
 
 interface TaskListItemProps {
@@ -45,6 +46,7 @@ export default function TaskListItem({
     startTransition(async () => {
       try {
         await onDelete(task._id);
+        toast.success("Task deleted");
       } catch (err) {
         console.error("Failed to delete task:", err);
       }
@@ -60,7 +62,7 @@ export default function TaskListItem({
               type="button"
               onClick={handleToggle}
               disabled={isPending}
-              className={`inline-flex h-6 w-6 items-center justify-center rounded-md border transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${
+              className={`inline-flex h-6 w-6 items-center justify-center rounded-md border transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-transform duration-75 ${
                 task.isCompleted
                   ? "border-emerald-700 bg-emerald-900/30 text-emerald-200"
                   : "border-zinc-700 bg-zinc-950 text-zinc-400 hover:bg-zinc-900"
@@ -106,7 +108,7 @@ export default function TaskListItem({
           <button
             type="button"
             onClick={() => onEdit(task)}
-            className="inline-flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-transform duration-75"
             disabled={isPending}
             aria-label="Edit task"
             title="Edit"
@@ -116,7 +118,7 @@ export default function TaskListItem({
           <button
             type="button"
             onClick={handleDelete}
-            className="inline-flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-transform duration-75"
             disabled={isPending}
             aria-label="Delete task"
             title="Delete"

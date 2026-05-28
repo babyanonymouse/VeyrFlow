@@ -58,7 +58,20 @@ export default function RootLayout({
           />
           <SerwistRegistrar>
             {children}
-            <Toaster richColors position="top-right" />
+            <Toaster 
+              position="top-right" 
+              toastOptions={{
+                classNames: {
+                  toast: 'group flex items-center bg-zinc-950/80 backdrop-blur-xl border border-indigo-500/20 text-zinc-100 shadow-2xl rounded-xl p-4',
+                  title: 'text-sm font-medium tracking-wide',
+                  description: 'text-xs text-zinc-400',
+                  actionButton: 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors',
+                  cancelButton: 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors',
+                  success: 'border-l-2 border-l-teal-400/50',
+                  error: 'border-l-2 border-l-red-400/50',
+                },
+              }} 
+            />
             <Analytics />
           </SerwistRegistrar>
         </body>
