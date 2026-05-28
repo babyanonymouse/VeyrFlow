@@ -57,7 +57,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
           <NextTopLoader
-            color="#6366f1"
+            color="#818cf8"
             showSpinner={false}
             height={3}
             crawlSpeed={160}
