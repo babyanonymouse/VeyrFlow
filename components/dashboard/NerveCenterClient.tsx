@@ -4,10 +4,12 @@ import { useOptimistic, useTransition, useState, useEffect } from "react";
 import { checkOffHabit } from "@/lib/actions/habit.actions";
 import { setTaskCompleted, updateTask } from "@/lib/actions/task.actions";
 import { getDashboardSummary } from "@/lib/actions/summary.actions";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import HabitCarousel from "./HabitCarousel";
 import PriorityTaskList from "./PriorityTaskList";
 import AiIntelligenceSlot from "./AiIntelligenceSlot";
 import WeeklySnapshot from "./WeeklySnapshot";
+import PwaInstallPrompt from "./PwaInstallPrompt";
 import { Activity } from "lucide-react";
 import TaskModal from "@/components/tasks/TaskModal";
 import HabitAnalyticsDrawer from "@/components/habits/HabitAnalyticsDrawer";
@@ -38,6 +40,7 @@ export interface DashboardSummary {
 }
 
 export default function NerveCenterClient({ initialData }: { initialData: DashboardSummary }) {
+  const [parentRef] = useAutoAnimate();
   const [overrideSummary, setOverrideSummary] = useState<DashboardSummary | null>(null);
   const activeData = overrideSummary || initialData;
   const [isPending, startTransition] = useTransition();
@@ -132,7 +135,10 @@ export default function NerveCenterClient({ initialData }: { initialData: Dashbo
   const isDoubleEmpty = optHabits.length === 0 && optTasks.length === 0;
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-5xl mx-auto overflow-x-hidden md:overflow-x-visible">
+    <div ref={parentRef} className="p-6 md:p-8 space-y-8 max-w-5xl mx-auto overflow-x-hidden md:overflow-x-visible">
+      {/* PWA Install Promotion Banner */}
+      <PwaInstallPrompt />
+
       {/* Greeting Header */}
       <div className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight text-white">{activeData.greeting}</h1>
