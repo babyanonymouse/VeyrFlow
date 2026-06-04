@@ -101,7 +101,11 @@ export default function TaskModal({
 
   function applyDate(nextDate: Date, closeDrawer = false) {
     const base = new Date(nextDate);
-    const current = selectedDate ?? new Date();
+    const current = selectedDate ?? (() => {
+      const d = new Date();
+      d.setHours(9, 0, 0, 0);
+      return d;
+    })();
     base.setHours(current.getHours(), current.getMinutes(), 0, 0);
     setDeadline(toLocalDateTimeInputValue(base));
     setParsedDateText(null);
@@ -445,6 +449,36 @@ function DesktopDatePickerContent({
   handleHourSelect: (hour: number) => void;
   handleMinuteSelect: (minute: number) => void;
 }) {
+  const [displayedMonth, setDisplayedMonth] = useState<Date>(selectedDate ?? new Date());
+
+  useEffect(() => {
+    if (selectedDate) {
+      setDisplayedMonth(selectedDate);
+    }
+  }, [selectedDate]);
+
+  const todayDate = new Date();
+  const tomorrowDate = addDays(new Date(), 1);
+  const weekendDate = (() => {
+    const today = new Date();
+    const day = today.getDay();
+    const daysUntilSaturday = day === 6 || day === 0 ? 0 : 6 - day;
+    return addDays(today, daysUntilSaturday);
+  })();
+  const nextWeekDate = startOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 });
+
+  const isTodayActive = selectedDate && selectedDate.toDateString() === todayDate.toDateString();
+  const isTomorrowActive = selectedDate && selectedDate.toDateString() === tomorrowDate.toDateString();
+  const isWeekendActive = selectedDate && selectedDate.toDateString() === weekendDate.toDateString();
+  const isNextWeekActive = selectedDate && selectedDate.toDateString() === nextWeekDate.toDateString();
+
+  const getPresetClass = (isActive: boolean | undefined) =>
+    `rounded-full border px-2.5 py-1 text-[11px] font-medium transition-all active:scale-[0.98] cursor-pointer ${
+      isActive
+        ? "border-indigo-500/40 bg-indigo-500/20 text-indigo-400 font-semibold"
+        : "border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800"
+    }`;
+
   return (
     <div className="flex flex-row gap-4 items-stretch">
       {/* Left Column: Presets + Calendar */}
@@ -453,34 +487,29 @@ function DesktopDatePickerContent({
         <div className="flex gap-1.5 justify-between">
           <button
             type="button"
-            onClick={() => applyDate(new Date(), false)}
-            className="rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-[11px] font-medium text-zinc-300 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75 cursor-pointer"
+            onClick={() => applyDate(todayDate, false)}
+            className={getPresetClass(isTodayActive)}
           >
             Today
           </button>
           <button
             type="button"
-            onClick={() => applyDate(addDays(new Date(), 1), false)}
-            className="rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-[11px] font-medium text-zinc-300 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75 cursor-pointer"
+            onClick={() => applyDate(tomorrowDate, false)}
+            className={getPresetClass(isTomorrowActive)}
           >
             Tomorrow
           </button>
           <button
             type="button"
-            onClick={() => {
-              const today = new Date();
-              const day = today.getDay();
-              const daysUntilSaturday = day === 6 || day === 0 ? 0 : 6 - day;
-              applyDate(addDays(today, daysUntilSaturday), false);
-            }}
-            className="rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-[11px] font-medium text-zinc-300 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75 cursor-pointer"
+            onClick={() => applyDate(weekendDate, false)}
+            className={getPresetClass(isWeekendActive)}
           >
             Weekend
           </button>
           <button
             type="button"
-            onClick={() => applyDate(startOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }), false)}
-            className="rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-[11px] font-medium text-zinc-300 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75 cursor-pointer"
+            onClick={() => applyDate(nextWeekDate, false)}
+            className={getPresetClass(isNextWeekActive)}
           >
             Next Week
           </button>
@@ -489,11 +518,13 @@ function DesktopDatePickerContent({
         {/* Calendar */}
         <Calendar
           mode="single"
-          selected={selectedDate}
+          selected={selectedDate ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()) : undefined}
           onSelect={(date) => {
             if (!date) return;
             applyDate(date, false);
           }}
+          month={displayedMonth}
+          onMonthChange={setDisplayedMonth}
           className="rounded-xl border border-zinc-800/70 bg-zinc-950/50 p-2"
         />
       </div>
@@ -533,6 +564,28 @@ function MobileDatePickerContent({
   setDrawerOpen: (open: boolean) => void;
 }) {
   const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false);
+  const [displayedMonth, setDisplayedMonth] = useState<Date>(selectedDate ?? new Date());
+
+  useEffect(() => {
+    if (selectedDate) {
+      setDisplayedMonth(selectedDate);
+    }
+  }, [selectedDate]);
+
+  const todayDate = new Date();
+  const tomorrowDate = addDays(new Date(), 1);
+  const weekendDate = (() => {
+    const today = new Date();
+    const day = today.getDay();
+    const daysUntilSaturday = day === 6 || day === 0 ? 0 : 6 - day;
+    return addDays(today, daysUntilSaturday);
+  })();
+  const nextWeekDate = startOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 });
+
+  const isTodayActive = selectedDate && selectedDate.toDateString() === todayDate.toDateString();
+  const isTomorrowActive = selectedDate && selectedDate.toDateString() === tomorrowDate.toDateString();
+  const isWeekendActive = selectedDate && selectedDate.toDateString() === weekendDate.toDateString();
+  const isNextWeekActive = selectedDate && selectedDate.toDateString() === nextWeekDate.toDateString();
 
   return (
     <div className="flex flex-col gap-4">
@@ -561,48 +614,59 @@ function MobileDatePickerContent({
       <div className="grid grid-cols-4 gap-2">
         <button
           type="button"
-          onClick={() => applyDate(new Date(), false)}
-          className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/50 transition-colors cursor-pointer"
+          onClick={() => applyDate(todayDate, false)}
+          className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/30 transition-colors cursor-pointer"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all ${
+            isTodayActive
+              ? "border-indigo-500 bg-indigo-650 bg-indigo-600 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+              : "border-indigo-500/20 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/25"
+          }`}>
             <CalendarIcon size={20} />
           </div>
-          <span className="mt-1.5 text-xs text-zinc-400 font-medium">Today</span>
+          <span className={`mt-1.5 text-xs transition-colors font-medium ${isTodayActive ? "text-indigo-400" : "text-zinc-400"}`}>Today</span>
         </button>
         <button
           type="button"
-          onClick={() => applyDate(addDays(new Date(), 1), false)}
-          className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/50 transition-colors cursor-pointer"
+          onClick={() => applyDate(tomorrowDate, false)}
+          className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/30 transition-colors cursor-pointer"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all ${
+            isTomorrowActive
+              ? "border-indigo-500 bg-indigo-650 bg-indigo-600 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+              : "border-indigo-500/20 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/25"
+          }`}>
             <Sunrise size={20} />
           </div>
-          <span className="mt-1.5 text-xs text-zinc-400 font-medium">Tomorrow</span>
+          <span className={`mt-1.5 text-xs transition-colors font-medium ${isTomorrowActive ? "text-indigo-400" : "text-zinc-400"}`}>Tomorrow</span>
         </button>
         <button
           type="button"
-          onClick={() => {
-            const today = new Date();
-            const day = today.getDay();
-            const daysUntilSaturday = day === 6 || day === 0 ? 0 : 6 - day;
-            applyDate(addDays(today, daysUntilSaturday), false);
-          }}
-          className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/50 transition-colors cursor-pointer"
+          onClick={() => applyDate(weekendDate, false)}
+          className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/30 transition-colors cursor-pointer"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all ${
+            isWeekendActive
+              ? "border-indigo-500 bg-indigo-650 bg-indigo-600 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+              : "border-indigo-500/20 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/25"
+          }`}>
             <Sparkles size={20} />
           </div>
-          <span className="mt-1.5 text-xs text-zinc-400 font-medium">Weekend</span>
+          <span className={`mt-1.5 text-xs transition-colors font-medium ${isWeekendActive ? "text-indigo-400" : "text-zinc-400"}`}>Weekend</span>
         </button>
         <button
           type="button"
-          onClick={() => applyDate(startOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }), false)}
-          className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/50 transition-colors cursor-pointer"
+          onClick={() => applyDate(nextWeekDate, false)}
+          className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/30 transition-colors cursor-pointer"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all ${
+            isNextWeekActive
+              ? "border-indigo-500 bg-indigo-650 bg-indigo-600 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+              : "border-indigo-500/20 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/25"
+          }`}>
             <CalendarRange size={20} />
           </div>
-          <span className="mt-1.5 text-xs text-zinc-400 font-medium">Next Week</span>
+          <span className={`mt-1.5 text-xs transition-colors font-medium ${isNextWeekActive ? "text-indigo-400" : "text-zinc-400"}`}>Next Week</span>
         </button>
       </div>
 
@@ -610,11 +674,13 @@ function MobileDatePickerContent({
       <div className="flex justify-center">
         <Calendar
           mode="single"
-          selected={selectedDate}
+          selected={selectedDate ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()) : undefined}
           onSelect={(date) => {
             if (!date) return;
             applyDate(date, false);
           }}
+          month={displayedMonth}
+          onMonthChange={setDisplayedMonth}
           className="rounded-xl border border-zinc-800/70 bg-zinc-950/50 p-2"
         />
       </div>

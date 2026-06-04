@@ -1,11 +1,8 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
-import { Plus, Loader2, Clock, X } from "lucide-react";
-import { Drawer } from "vaul";
+import { Plus, Loader2, Clock, X, Keyboard, Check, ChevronDown } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { createHabit } from "@/lib/actions/habit.actions";
-
 function formatTargetTime(timeStr: string) {
   if (!timeStr) return "";
   const parts = timeStr.split(":").map(Number);
@@ -24,7 +21,7 @@ export default function CreateHabitModal() {
   const [targetTime, setTargetTime] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
@@ -144,7 +141,7 @@ export default function CreateHabitModal() {
               <div className="relative">
                 <button
                   type="button"
-                  onClick={() => setDrawerOpen(true)}
+                  onClick={() => setIsTimeDialogOpen(true)}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-4 pr-16 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors flex items-center justify-between text-left cursor-pointer"
                 >
                   <span>{targetTime ? formatTargetTime(targetTime) : "Set target time"}</span>
@@ -194,12 +191,13 @@ export default function CreateHabitModal() {
                     <Clock size={16} className="text-zinc-500 pointer-events-none" />
                   </div>
                 </div>
-                <PopoverContent className="w-[320px] p-4 bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl" align="start">
-                  <TimePickerContent
+                <PopoverContent className="w-auto p-4 bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl" align="start">
+                  <MaterialTimePicker
                     selectedHour={selectedHour}
                     selectedMinute={selectedMinute}
-                    handleHourSelect={handleHourSelect}
-                    handleMinuteSelect={handleMinuteSelect}
+                    onHourSelect={handleHourSelect}
+                    onMinuteSelect={handleMinuteSelect}
+                    showActions={false}
                   />
                 </PopoverContent>
               </Popover>
@@ -230,110 +228,273 @@ export default function CreateHabitModal() {
         </form>
       </div>
 
-      <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 z-70 bg-black/60" />
-          <Drawer.Content className="fixed inset-x-0 bottom-0 z-80 rounded-t-2xl border border-zinc-800 bg-zinc-950 p-4 shadow-2xl">
-            <Drawer.Title className="sr-only">Set Target Time</Drawer.Title>
-            <Drawer.Description className="sr-only">Choose a target time for the habit</Drawer.Description>
-            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-zinc-700" />
-            <TimePickerContent
+      {/* Material Time Picker Dialog Overlay */}
+      {isTimeDialogOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-xs"
+            onClick={() => setIsTimeDialogOpen(false)}
+          />
+          <div className="relative w-[280px] bg-zinc-900 border border-zinc-800 rounded-3xl p-5 shadow-2xl z-[70]">
+            <MaterialTimePicker
               selectedHour={selectedHour}
               selectedMinute={selectedMinute}
-              handleHourSelect={handleHourSelect}
-              handleMinuteSelect={handleMinuteSelect}
+              onHourSelect={handleHourSelect}
+              onMinuteSelect={handleMinuteSelect}
+              showActions={true}
+              onCancel={() => setIsTimeDialogOpen(false)}
+              onOk={() => setIsTimeDialogOpen(false)}
             />
-          </Drawer.Content>
-        </Drawer.Portal>
-      </Drawer.Root>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function TimePickerContent({
+function MaterialTimePicker({
   selectedHour,
   selectedMinute,
-  handleHourSelect,
-  handleMinuteSelect,
+  onHourSelect,
+  onMinuteSelect,
+  showActions,
+  onCancel,
+  onOk,
 }: {
   selectedHour: number;
   selectedMinute: number;
-  handleHourSelect: (hour: number) => void;
-  handleMinuteSelect: (minute: number) => void;
+  onHourSelect: (hour: number) => void;
+  onMinuteSelect: (minute: number) => void;
+  showActions: boolean;
+  onCancel?: () => void;
+  onOk?: () => void;
 }) {
-  const hourContainerRef = useRef<HTMLDivElement>(null);
-  const minuteContainerRef = useRef<HTMLDivElement>(null);
+  const [selectionMode, setSelectionMode] = useState<"hours" | "minutes">("hours");
+  const [isManualInput, setIsManualInput] = useState(false);
+
+  // Convert 24h to 12h format
+  const isPm = selectedHour >= 12;
+  const displayHour = selectedHour % 12 === 0 ? 12 : selectedHour % 12;
+  const amPm = isPm ? "PM" : "AM";
+
+  const displayMinuteStr = String(selectedMinute).padStart(2, "0");
+  const displayHourStr = String(displayHour).padStart(2, "0");
+
+  function handleAmPmChange(target: "AM" | "PM") {
+    if (target === "AM" && isPm) {
+      onHourSelect(selectedHour - 12);
+    } else if (target === "PM" && !isPm) {
+      onHourSelect(selectedHour + 12);
+    }
+  }
+
+  function handleHourClick(hour12: number) {
+    let nextHour24 = hour12;
+    if (isPm) {
+      nextHour24 = hour12 === 12 ? 12 : hour12 + 12;
+    } else {
+      nextHour24 = hour12 === 12 ? 0 : hour12;
+    }
+    onHourSelect(nextHour24);
+    setSelectionMode("minutes");
+  }
+
+  function handleMinuteClick(minute: number) {
+    onMinuteSelect(minute);
+  }
+
+  // Temporary state for manual input typing
+  const [typedHour, setTypedHour] = useState(displayHourStr);
+  const [typedMinute, setTypedMinute] = useState(displayMinuteStr);
 
   useEffect(() => {
-    // Scroll selected hour and minute into view immediately
-    const hourEl = hourContainerRef.current?.querySelector(`#hour-opt-${selectedHour}`);
-    if (hourEl) {
-      hourEl.scrollIntoView({ block: "nearest", behavior: "auto" });
+    if (!isManualInput) {
+      setTypedHour(displayHourStr);
+      setTypedMinute(displayMinuteStr);
     }
-    const minuteEl = minuteContainerRef.current?.querySelector(`#minute-opt-${selectedMinute}`);
-    if (minuteEl) {
-      minuteEl.scrollIntoView({ block: "nearest", behavior: "auto" });
+  }, [selectedHour, selectedMinute, isManualInput, displayHourStr, displayMinuteStr]);
+
+  function handleManualSubmit() {
+    let hh = parseInt(typedHour, 10);
+    let mm = parseInt(typedMinute, 10);
+    if (isNaN(hh)) hh = displayHour;
+    if (isNaN(mm)) mm = selectedMinute;
+
+    hh = Math.max(1, Math.min(12, hh));
+    mm = Math.max(0, Math.min(59, mm));
+
+    let hour24 = hh;
+    if (isPm) {
+      hour24 = hh === 12 ? 12 : hh + 12;
+    } else {
+      hour24 = hh === 12 ? 0 : hh;
     }
-  }, [selectedHour, selectedMinute]);
+
+    onHourSelect(hour24);
+    onMinuteSelect(mm);
+    setIsManualInput(false);
+  }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-2 gap-4 rounded-xl border border-zinc-800 bg-zinc-950 p-3">
-        {/* Hours Column */}
-        <div>
-          <div className="text-center text-xs font-semibold text-zinc-500 mb-2">Hour</div>
-          <div
-            ref={hourContainerRef}
-            className="h-44 overflow-y-auto scrollbar-none flex flex-col gap-1.5 pr-1"
+    <div className="flex flex-col items-center gap-4">
+      {/* digital readout */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center text-5xl font-light tracking-tight">
+          <span
+            onClick={() => {
+              setIsManualInput(false);
+              setSelectionMode("hours");
+            }}
+            className={`cursor-pointer transition-colors select-none ${
+              selectionMode === "hours" && !isManualInput
+                ? "text-indigo-400 font-medium"
+                : "text-zinc-500 hover:text-zinc-400"
+            }`}
           >
-            {Array.from({ length: 24 }).map((_, i) => {
-              const isSelected = selectedHour === i;
-              return (
-                <button
-                  key={i}
-                  id={`hour-opt-${i}`}
-                  type="button"
-                  onClick={() => handleHourSelect(i)}
-                  className={`h-11 w-full flex items-center justify-center text-sm rounded-md transition-colors cursor-pointer ${
-                    isSelected
-                      ? "bg-indigo-600 text-white font-medium shadow-sm"
-                      : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
-                  }`}
-                >
-                  {String(i).padStart(2, "0")}
-                </button>
-              );
-            })}
-          </div>
+            {displayHourStr}
+          </span>
+          <span className="text-zinc-650 mx-1.5 select-none">:</span>
+          <span
+            onClick={() => {
+              setIsManualInput(false);
+              setSelectionMode("minutes");
+            }}
+            className={`cursor-pointer transition-colors select-none ${
+              selectionMode === "minutes" && !isManualInput
+                ? "text-indigo-400 font-medium"
+                : "text-zinc-500 hover:text-zinc-400"
+            }`}
+          >
+            {displayMinuteStr}
+          </span>
         </div>
 
-        {/* Minutes Column */}
-        <div>
-          <div className="text-center text-xs font-semibold text-zinc-500 mb-2">Minute</div>
-          <div
-            ref={minuteContainerRef}
-            className="h-44 overflow-y-auto scrollbar-none flex flex-col gap-1.5 pr-1"
+        {/* AM/PM toggle */}
+        <div className="flex flex-col text-xs font-semibold gap-1 select-none">
+          <button
+            type="button"
+            onClick={() => handleAmPmChange("AM")}
+            className={`transition-colors cursor-pointer ${
+              amPm === "AM" ? "text-indigo-400" : "text-zinc-500 hover:text-zinc-400"
+            }`}
           >
-            {Array.from({ length: 60 }).map((_, i) => {
-              const isSelected = selectedMinute === i;
+            AM
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAmPmChange("PM")}
+            className={`transition-colors cursor-pointer ${
+              amPm === "PM" ? "text-indigo-400" : "text-zinc-500 hover:text-zinc-400"
+            }`}
+          >
+            PM
+          </button>
+        </div>
+      </div>
+
+      {/* selection grid or manual input */}
+      <div className="w-full flex items-center justify-center min-h-[190px]">
+        {isManualInput ? (
+          <div className="flex flex-col items-center gap-3 w-full">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                maxLength={2}
+                value={typedHour}
+                onChange={(e) => setTypedHour(e.target.value.replace(/\D/g, ""))}
+                placeholder="HH"
+                className="w-14 h-12 rounded-lg bg-zinc-950 border border-zinc-800 text-center text-lg text-zinc-100 outline-none focus:border-indigo-500/50"
+              />
+              <span className="text-zinc-500 font-bold">:</span>
+              <input
+                type="text"
+                maxLength={2}
+                value={typedMinute}
+                onChange={(e) => setTypedMinute(e.target.value.replace(/\D/g, ""))}
+                placeholder="MM"
+                className="w-14 h-12 rounded-lg bg-zinc-950 border border-zinc-800 text-center text-lg text-zinc-100 outline-none focus:border-indigo-500/50"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleManualSubmit}
+              className="px-3 py-1 text-xs font-medium text-indigo-400 hover:bg-zinc-800 rounded-md border border-zinc-800 transition-colors cursor-pointer"
+            >
+              Apply
+            </button>
+          </div>
+        ) : selectionMode === "hours" ? (
+          <div className="grid grid-cols-3 gap-2">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((h) => {
+              const isActive = displayHour === h;
               return (
                 <button
-                  key={i}
-                  id={`minute-opt-${i}`}
+                  key={h}
                   type="button"
-                  onClick={() => handleMinuteSelect(i)}
-                  className={`h-11 w-full flex items-center justify-center text-sm rounded-md transition-colors cursor-pointer ${
-                    isSelected
-                      ? "bg-indigo-600 text-white font-medium shadow-sm"
-                      : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+                  onClick={() => handleHourClick(h)}
+                  className={`w-11 h-11 rounded-full flex items-center justify-center text-sm transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-indigo-500 text-white font-semibold"
+                      : "text-zinc-300 hover:bg-zinc-800"
                   }`}
                 >
-                  {String(i).padStart(2, "0")}
+                  {h}
                 </button>
               );
             })}
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-2">
+            {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((m) => {
+              const isActive = selectedMinute === m;
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => handleMinuteClick(m)}
+                  className={`w-11 h-11 rounded-full flex items-center justify-center text-xs transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-indigo-500 text-white font-semibold"
+                      : "text-zinc-300 hover:bg-zinc-800"
+                  }`}
+                >
+                  {String(m).padStart(2, "0")}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* footer */}
+      <div className="w-full flex items-center justify-between border-t border-zinc-800/60 pt-3.5 mt-2 select-none">
+        <button
+          type="button"
+          onClick={() => setIsManualInput(!isManualInput)}
+          className="text-zinc-400 hover:text-zinc-200 rounded-md p-1 cursor-pointer transition-colors"
+          aria-label="Toggle keyboard"
+        >
+          <Keyboard size={16} />
+        </button>
+
+        {showActions && (
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="text-sm font-semibold text-indigo-400 hover:text-indigo-300 px-2 py-1 cursor-pointer transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={onOk}
+              className="text-sm font-semibold text-indigo-400 hover:text-indigo-300 px-2 py-1 cursor-pointer transition-colors"
+            >
+              OK
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
