@@ -153,7 +153,7 @@ export default function NerveCenterClient({ initialData }: { initialData: Dashbo
         <div className="py-16 px-6 flex flex-col items-center justify-center text-center space-y-6 border border-zinc-800 rounded-3xl bg-zinc-900/50 relative overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-teal-500/10 blur-[100px] rounded-full pointer-events-none" />
           <div className="bg-zinc-800 p-5 rounded-full ring-1 ring-zinc-700 relative z-10 shadow-xl shadow-black/50 animate-pulse">
-            <Logo size={40} />
+            <Logo size={40} id="empty-state" />
           </div>
           <div className="relative z-10 max-w-sm mx-auto">
             <h2 className="text-2xl font-bold text-white mb-2">All caught up!</h2>

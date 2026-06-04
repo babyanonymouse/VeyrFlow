@@ -30,7 +30,7 @@ export default async function LandingPage() {
       {/* Navigation */}
       <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-zinc-950/60 border-b border-white/5">
         <div className="flex items-center gap-2">
-          <Logo size={20} />
+          <Logo size={20} id="landing-nav" />
           <span className="font-bold text-lg tracking-tight text-white">VeyrFlow</span>
         </div>
         <div className="flex items-center gap-6 text-sm font-medium">
@@ -244,7 +244,7 @@ export default async function LandingPage() {
           </div>
           
           <div className="md:col-span-4 bg-linear-to-br from-indigo-500/20 to-teal-500/25 border border-teal-500/30 rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden shadow-inner">
-            <Logo size={40} className="mb-2" />
+            <Logo size={40} id="landing-card" className="mb-2" />
             <div className="text-4xl sm:text-5xl font-black text-white tracking-tighter">
               100%
             </div>
@@ -270,7 +270,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-800/60 bg-zinc-900/30 hover:bg-zinc-900/80 cursor-default transition-colors">
-            <Logo size={16} />
+            <Logo size={16} id="landing-footer" />
             <span className="font-semibold text-zinc-300 tracking-wide text-[10px] uppercase">A PeoLabs Project</span>
           </div>
         </div>
