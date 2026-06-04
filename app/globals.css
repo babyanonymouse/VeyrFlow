@@ -11,3 +11,28 @@
   --color-muted:      #71717a; /* zinc-500 */
   --color-text:       #fafafa; /* zinc-50  */
 }
+
+/* Custom utility scrollbar classes */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+

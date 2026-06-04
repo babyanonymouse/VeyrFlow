@@ -28,7 +28,7 @@ export default async function LandingPage() {
     <div className="min-h-screen bg-zinc-950 font-sans text-zinc-100 selection:bg-indigo-500/30 overflow-x-hidden">
       {/* Navigation */}
       <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-zinc-950/60 border-b border-white/5">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">o
           <Activity className="w-5 h-5 text-indigo-400" />
           <span className="font-bold text-lg tracking-tight text-white">HabitFlow</span>
         </div>
