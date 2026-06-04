@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import * as chrono from "chrono-node";
-import { format, addDays, addWeeks, startOfWeek, isToday, isTomorrow } from "date-fns";
+import { format, isToday, isTomorrow } from "date-fns";
 import { CalendarDays, X } from "lucide-react";
-import { DayPicker } from "react-day-picker";
+import { Calendar } from "@/components/ui/calendar";
 import { Drawer } from "vaul";
 import { z } from "zod";
 import { taskFormSchema, type TaskFormInput } from "@/lib/validators/task";
@@ -47,6 +48,9 @@ export default function TaskModal({
   const [deadline, setDeadline] = useState(defaults.deadline);
   const [privacyMode, setPrivacyMode] = useState(defaults.privacyMode);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [parsedDateText, setParsedDateText] = useState<string | null>(null);
   const [ignoredMatches, setIgnoredMatches] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -71,14 +75,50 @@ export default function TaskModal({
     return format(selectedDate, "HH:mm");
   }, [selectedDate]);
 
+  const selectedHour = useMemo(() => {
+    if (!selectedDate) return 9;
+    return selectedDate.getHours();
+  }, [selectedDate]);
+
+  const selectedMinute = useMemo(() => {
+    if (!selectedDate) return 0;
+    return selectedDate.getMinutes();
+  }, [selectedDate]);
+
+  function handleHourSelect(hour: number) {
+    const next = selectedDate ? new Date(selectedDate) : new Date();
+    next.setHours(hour, selectedMinute, 0, 0);
+    setDeadline(toLocalDateTimeInputValue(next));
+    setParsedDateText(null);
+  }
+
+  function handleMinuteSelect(minute: number) {
+    const next = selectedDate ? new Date(selectedDate) : new Date();
+    next.setHours(selectedHour, minute, 0, 0);
+    setDeadline(toLocalDateTimeInputValue(next));
+    setParsedDateText(null);
+  }
+
   function applyDate(nextDate: Date, closeDrawer = false) {
     const base = new Date(nextDate);
     const current = selectedDate ?? new Date();
     base.setHours(current.getHours(), current.getMinutes(), 0, 0);
     setDeadline(toLocalDateTimeInputValue(base));
     setParsedDateText(null);
-    if (closeDrawer) setDrawerOpen(false);
+    if (closeDrawer) {
+      setDrawerOpen(false);
+      setPopoverOpen(false);
+    }
   }
+
+  useEffect(() => {
+    setIsMounted(true);
+    const media = window.matchMedia("(max-width: 768px)");
+    setIsMobile(media.matches);
+    const listener = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, []);
 
   function handleTitleChange(nextTitle: string) {
     setTitle(nextTitle);
@@ -212,8 +252,14 @@ export default function TaskModal({
                 <div className="absolute right-2 flex items-center gap-1 rounded-full border border-indigo-500/30 bg-indigo-500/20 pr-1 text-xs font-medium text-indigo-100">
                   <button
                     type="button"
-                    onClick={() => setDrawerOpen(true)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 transition-colors hover:bg-indigo-500/20 rounded-l-full"
+                    onClick={() => {
+                      if (isMobile) {
+                        setDrawerOpen(true);
+                      } else {
+                        setPopoverOpen(true);
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 transition-colors hover:bg-indigo-500/20 rounded-l-full cursor-pointer"
                   >
                     <CalendarDays size={12} />
                     <span>{deadlinePillLabel}</span>
@@ -277,14 +323,53 @@ export default function TaskModal({
               <label className="block text-sm font-medium text-zinc-200">
                 Deadline
               </label>
-              <button
-                type="button"
-                onClick={() => setDrawerOpen(true)}
-                className="mt-1 inline-flex w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors hover:bg-zinc-900"
-              >
-                <span>{deadline ? deadlinePillLabel : "Set deadline"}</span>
-                <CalendarDays size={16} />
-              </button>
+              {!isMounted ? (
+                <button
+                  type="button"
+                  disabled
+                  className="mt-1 inline-flex w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 opacity-60 cursor-not-allowed"
+                >
+                  <span>{deadline ? deadlinePillLabel : "Set deadline"}</span>
+                  <CalendarDays size={16} />
+                </button>
+              ) : isMobile ? (
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(true)}
+                  className="mt-1 inline-flex w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors hover:bg-zinc-900 cursor-pointer"
+                >
+                  <span>{deadline ? deadlinePillLabel : "Set deadline"}</span>
+                  <CalendarDays size={16} />
+                </button>
+              ) : (
+                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="mt-1 inline-flex w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors hover:bg-zinc-900 cursor-pointer"
+                    >
+                      <span>{deadline ? deadlinePillLabel : "Set deadline"}</span>
+                      <CalendarDays size={16} />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-[320px] p-4 bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl max-h-[calc(var(--radix-popover-content-available-height)_-_24px)] overflow-y-auto scrollbar-thin"
+                    align="start"
+                    side="bottom"
+                    collisionPadding={12}
+                  >
+                    <DatePickerContent
+                      selectedDate={selectedDate}
+                      timeValue={timeValue}
+                      selectedHour={selectedHour}
+                      selectedMinute={selectedMinute}
+                      applyDate={applyDate}
+                      handleHourSelect={handleHourSelect}
+                      handleMinuteSelect={handleMinuteSelect}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </div>
           </div>
 
@@ -330,82 +415,132 @@ export default function TaskModal({
             <Drawer.Title className="sr-only">Set Deadline</Drawer.Title>
             <Drawer.Description className="sr-only">Choose a date and time preset for the task</Drawer.Description>
             <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-zinc-700" />
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => applyDate(new Date(), true)}
-                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75"
-                >
-                  Today
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyDate(addDays(new Date(), 1), true)}
-                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75"
-                >
-                  Tomorrow
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const today = new Date();
-                    const day = today.getDay();
-                    const daysUntilSaturday = day === 6 || day === 0 ? 0 : 6 - day;
-                    applyDate(addDays(today, daysUntilSaturday), true);
-                  }}
-                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75"
-                >
-                  This Weekend
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyDate(startOfWeek(addWeeks(new Date(), 1), { weekStartsOn: 1 }), true)}
-                  className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs text-zinc-100 hover:bg-zinc-800 active:scale-[0.98] transition-transform duration-75"
-                >
-                  Next Week
-                </button>
-              </div>
-
-              <DayPicker
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => {
-                  if (!date) return;
-                  applyDate(date);
-                }}
-                className="rounded-xl border border-zinc-800/70 bg-zinc-950/50 p-3"
-                classNames={{
-                  month_caption: "mb-3 text-sm font-medium text-zinc-100",
-                  weekdays: "mb-1",
-                  weekday: "text-xs text-zinc-500",
-                  day: "text-zinc-200",
-                  day_button:
-                    "h-9 w-9 rounded-md text-sm transition-colors hover:bg-zinc-900 aria-selected:bg-indigo-500 aria-selected:text-white",
-                  today: "text-indigo-300",
-                }}
-              />
-
-              <div>
-                <label className="block text-xs font-medium text-zinc-400">Time</label>
-                <input
-                  title="Time"
-                  type="time"
-                  value={timeValue}
-                  onChange={(e) => {
-                    const [hours, minutes] = e.target.value.split(":").map(Number);
-                    const next = selectedDate ? new Date(selectedDate) : new Date();
-                    next.setHours(hours || 0, minutes || 0, 0, 0);
-                    setDeadline(toLocalDateTimeInputValue(next));
-                    setParsedDateText(null);
-                  }}
-                  className="mt-1 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-600"
-                />
-              </div>
-            </div>
+            <DatePickerContent
+              selectedDate={selectedDate}
+              timeValue={timeValue}
+              selectedHour={selectedHour}
+              selectedMinute={selectedMinute}
+              applyDate={applyDate}
+              handleHourSelect={handleHourSelect}
+              handleMinuteSelect={handleMinuteSelect}
+            />
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
+    </div>
+  );
+}
+
+function DatePickerContent({
+  selectedDate,
+  selectedHour,
+  selectedMinute,
+  applyDate,
+  handleHourSelect,
+  handleMinuteSelect,
+}: {
+  selectedDate: Date | undefined;
+  timeValue: string;
+  selectedHour: number;
+  selectedMinute: number;
+  applyDate: (nextDate: Date, closeDrawer?: boolean) => void;
+  handleHourSelect: (hour: number) => void;
+  handleMinuteSelect: (minute: number) => void;
+}) {
+  const hourContainerRef = useRef<HTMLDivElement>(null);
+  const minuteContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll selected hour and minute into view immediately
+    const hourEl = hourContainerRef.current?.querySelector(`#hour-opt-${selectedHour}`);
+    if (hourEl) {
+      hourEl.scrollIntoView({ block: "nearest", behavior: "auto" });
+    }
+    const minuteEl = minuteContainerRef.current?.querySelector(`#minute-opt-${selectedMinute}`);
+    if (minuteEl) {
+      minuteEl.scrollIntoView({ block: "nearest", behavior: "auto" });
+    }
+  }, [selectedHour, selectedMinute]);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Calendar Component */}
+      <div className="flex justify-center">
+        <Calendar
+          mode="single"
+          selected={selectedDate}
+          onSelect={(date) => {
+            if (!date) return;
+            applyDate(date);
+          }}
+          className="rounded-xl border border-zinc-800/70 bg-zinc-950/50"
+        />
+      </div>
+
+      {/* Horizontal Separator */}
+      <hr className="border-border" />
+
+      {/* Time Picker */}
+      <div className="flex flex-col gap-2">
+        <label className="block text-xs font-medium text-zinc-400">Time</label>
+        <div className="grid grid-cols-2 gap-4 rounded-xl border border-zinc-800 bg-zinc-950 p-3 h-[200px]">
+          {/* Hours Column */}
+          <div className="flex-1 text-center p-1 flex flex-col h-full min-h-0">
+            <div className="text-xs font-semibold text-zinc-500 mb-2">Hour</div>
+            <div
+              ref={hourContainerRef}
+              className="flex-1 overflow-y-auto scrollbar-none flex flex-col gap-1"
+            >
+              {Array.from({ length: 24 }).map((_, i) => {
+                const isSelected = selectedHour === i;
+                return (
+                  <button
+                    key={i}
+                    id={`hour-opt-${i}`}
+                    type="button"
+                    onClick={() => handleHourSelect(i)}
+                    className={`h-8 w-full flex items-center justify-center text-center text-sm rounded-md transition-colors cursor-pointer ${
+                      isSelected
+                        ? "bg-indigo-500/20 text-indigo-300 font-medium rounded-md"
+                        : "text-zinc-400 hover:bg-zinc-800/50"
+                    }`}
+                  >
+                    {String(i).padStart(2, "0")}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Minutes Column */}
+          <div className="flex-1 text-center p-1 flex flex-col h-full min-h-0">
+            <div className="text-xs font-semibold text-zinc-500 mb-2">Minute</div>
+            <div
+              ref={minuteContainerRef}
+              className="flex-1 overflow-y-auto scrollbar-none flex flex-col gap-1"
+            >
+              {Array.from({ length: 60 }).map((_, i) => {
+                const isSelected = selectedMinute === i;
+                return (
+                  <button
+                    key={i}
+                    id={`minute-opt-${i}`}
+                    type="button"
+                    onClick={() => handleMinuteSelect(i)}
+                    className={`h-8 w-full flex items-center justify-center text-center text-sm rounded-md transition-colors cursor-pointer ${
+                      isSelected
+                        ? "bg-indigo-500/20 text-indigo-300 font-medium rounded-md"
+                        : "text-zinc-400 hover:bg-zinc-800/50"
+                    }`}
+                  >
+                    {String(i).padStart(2, "0")}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
