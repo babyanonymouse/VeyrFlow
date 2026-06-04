@@ -1,8 +1,8 @@
-# 📝 HabitFlow – Production-Grade To-Do & Habits App
+# 📝 VeyrFlow – Production-Grade To-Do & Habits App
 
 ## Overview
 
-HabitFlow is a full-stack, Next.js application designed to track tasks, habits, and recurring goals. It leverages a modern monolithic architecture, strict TypeScript typing, and edge-optimized AI to provide intelligent daily focus suggestions.
+VeyrFlow is a full-stack, Next.js application designed to track tasks, habits, and recurring goals. It leverages a modern monolithic architecture, strict TypeScript typing, and edge-optimized AI to provide intelligent daily focus suggestions.
 
 This is a production-ready build designed to demonstrate systems thinking, zero-drag deployment, and scalable database design.
 
@@ -57,7 +57,7 @@ This is a production-ready build designed to demonstrate systems thinking, zero-
 ## Project Structure
 
 ```
-HabitFlow/
+VeyrFlow/
 ├── .github/             # CI workflows and PR templates
 ├── app/                 # Next.js App Router (Pages, Layouts)
 │   ├── (auth)/          # Route group for authentication

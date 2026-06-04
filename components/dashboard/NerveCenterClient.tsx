@@ -10,13 +10,12 @@ import PriorityTaskList from "./PriorityTaskList";
 import AiIntelligenceSlot from "./AiIntelligenceSlot";
 import WeeklySnapshot from "./WeeklySnapshot";
 import PwaInstallPrompt from "./PwaInstallPrompt";
-import { Activity } from "lucide-react";
+import Logo from "@/components/ui/Logo";
 import TaskModal from "@/components/tasks/TaskModal";
 import HabitAnalyticsDrawer from "@/components/habits/HabitAnalyticsDrawer";
 import { toLocalDateTimeInputValue, toUtcDeadlineISOString } from "@/lib/utils/task-deadline";
 import type { TaskDTO } from "@/lib/actions/task.actions";
 import { taskCreateSchema } from "@/lib/validators/task";
-
 export interface HabitDTO {
   _id: string;
   title: string;
@@ -152,9 +151,9 @@ export default function NerveCenterClient({ initialData }: { initialData: Dashbo
 
       {isDoubleEmpty ? (
         <div className="py-16 px-6 flex flex-col items-center justify-center text-center space-y-6 border border-zinc-800 rounded-3xl bg-zinc-900/50 relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
-          <div className="bg-zinc-800 p-5 rounded-full ring-1 ring-zinc-700 relative z-10 shadow-xl shadow-black/50">
-            <Activity className="w-10 h-10 text-indigo-400" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-teal-500/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="bg-zinc-800 p-5 rounded-full ring-1 ring-zinc-700 relative z-10 shadow-xl shadow-black/50 animate-pulse">
+            <Logo size={40} />
           </div>
           <div className="relative z-10 max-w-sm mx-auto">
             <h2 className="text-2xl font-bold text-white mb-2">All caught up!</h2>

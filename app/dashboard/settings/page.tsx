@@ -54,10 +54,10 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Card 1: App Settings & Privacy */}
         <section className="rounded-3xl border border-zinc-800 bg-zinc-950/40 p-6 space-y-6 relative overflow-hidden backdrop-blur-md">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full pointer-events-none" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 blur-3xl rounded-full pointer-events-none" />
           
           <h2 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
-            <Shield size={18} className="text-indigo-400" />
+            <Shield size={18} className="text-teal-400" />
             Privacy & Guardrails
           </h2>
 
@@ -94,7 +94,7 @@ export default function SettingsPage() {
               <div>
                 <h3 className="text-sm font-semibold text-zinc-100">PWA Running</h3>
                 <p className="text-xs text-zinc-400 leading-relaxed mt-1">
-                  HabitFlow is running as an installed standalone app. Background assets are managed automatically.
+                  VeyrFlow is running as an installed standalone app. Background assets are managed automatically.
                 </p>
               </div>
             </div>
@@ -104,9 +104,9 @@ export default function SettingsPage() {
               {isInstallable && (
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5 flex flex-col items-center text-center gap-4">
                   <div className="space-y-1">
-                    <h3 className="text-sm font-semibold text-zinc-200">Install HabitFlow App</h3>
+                    <h3 className="text-sm font-semibold text-zinc-200">Install VeyrFlow App</h3>
                     <p className="text-xs text-zinc-400 leading-relaxed">
-                      Add HabitFlow to your desktop or home screen for quick launch and offline performance.
+                      Add VeyrFlow to your desktop or home screen for quick launch and offline performance.
                     </p>
                   </div>
                   <button
@@ -121,19 +121,19 @@ export default function SettingsPage() {
 
               {/* Static Instruction Box for iOS Safari */}
               {isIOS && (
-                <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 blur-2xl rounded-full pointer-events-none" />
+                <div className="rounded-2xl border border-teal-500/20 bg-teal-500/5 p-5 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/10 blur-2xl rounded-full pointer-events-none" />
                   <h3 className="text-sm font-semibold text-zinc-100 flex items-center gap-2 mb-2">
-                    <ArrowUpFromLine size={16} className="text-indigo-400" />
+                    <ArrowUpFromLine size={16} className="text-teal-400" />
                     Install on iOS Safari
                   </h3>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Add HabitFlow to your home screen to experience it as a native standalone PWA:
+                    Add VeyrFlow to your home screen to experience it as a native standalone PWA:
                   </p>
                   <ol className="mt-3 space-y-1.5 text-xs text-zinc-300 list-decimal list-inside">
                     <li>Tap the <span className="font-semibold text-white">Share</span> button at the bottom of Safari.</li>
                     <li>Scroll down and select <span className="font-semibold text-white">"Add to Home Screen"</span>.</li>
-                    <li>Tap <span className="font-semibold text-indigo-400">Add</span> in the top-right corner.</li>
+                    <li>Tap <span className="font-semibold text-teal-400">Add</span> in the top-right corner.</li>
                   </ol>
                 </div>
               )}

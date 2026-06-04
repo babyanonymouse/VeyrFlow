@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, CheckSquare, Repeat2, Settings, BookOpen, Activity } from "lucide-react";
+import { LayoutDashboard, CheckSquare, Repeat2, Settings, BookOpen } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
+import Logo from "@/components/ui/Logo";
 
 const links = [
   { href: "/dashboard",          label: "Overview",  icon: LayoutDashboard },
@@ -23,9 +24,9 @@ export default function Sidebar() {
   return (
     // z-40 — below modals (z-50) but above page content
     <aside className="fixed hidden md:flex flex-col w-64 h-screen z-40 border-r border-zinc-800 bg-zinc-950 px-4 py-6 gap-1">
-      <Link href="/dashboard" className="flex items-center gap-2.5 px-3 mb-6 outline-none focus:ring-2 focus:ring-indigo-500 rounded-md">
-        <Activity className="w-6 h-6 text-indigo-400" />
-        <span className="font-black text-xl tracking-tight text-white">HabitFlow</span>
+      <Link href="/dashboard" className="flex items-center gap-2.5 px-3 mb-6 outline-none focus:ring-2 focus:ring-teal-500 rounded-md">
+        <Logo size={24} />
+        <span className="font-black text-xl tracking-tight text-white">VeyrFlow</span>
       </Link>
       
       <nav className="flex-1 flex flex-col gap-1">
