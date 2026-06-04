@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Drawer } from "vaul";
 import { DayPicker } from "react-day-picker";
 import { Flame, Clock, CalendarDays, X, Settings } from "lucide-react";
 import { calculateStreak } from "@/lib/utils/date";
 import Link from "next/link";
+import HabitModal from "@/components/habits/HabitModal";
 
 interface HabitDTO {
   _id: string;
@@ -28,6 +29,8 @@ export default function HabitAnalyticsDrawer({
   habit,
   todayStr,
 }: HabitAnalyticsDrawerProps) {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   const currentStreak = useMemo(() => {
     if (!habit) return 0;
     return calculateStreak(habit.completedDates || [], todayStr);
@@ -100,7 +103,14 @@ export default function HabitAnalyticsDrawer({
               {habit.targetTime ? (
                 <div className="flex items-center gap-2 text-xs font-semibold text-amber-400">
                   <Clock size={14} className="animate-pulse" />
-                  <span>Target Time: {habit.targetTime}</span>
+                  <span>Target Time: {(() => {
+                    const [hStr, mStr] = habit.targetTime.split(":");
+                    if (!hStr || !mStr) return habit.targetTime;
+                    const hour = parseInt(hStr, 10);
+                    const ampm = hour >= 12 ? "PM" : "AM";
+                    const hour12 = hour % 12 || 12;
+                    return `${hour12}:${mStr} ${ampm}`;
+                  })()}</span>
                 </div>
               ) : (
                 <div className="text-xs font-semibold text-zinc-500">
@@ -108,14 +118,23 @@ export default function HabitAnalyticsDrawer({
                 </div>
               )}
 
-              <Link
-                href="/dashboard/habits"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-905 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 transition-colors"
-                onClick={() => onOpenChange(false)}
-              >
-                <Settings size={12} />
-                Manage Habit
-              </Link>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 hover:text-white transition-colors cursor-pointer"
+                >
+                  <Settings size={12} />
+                  Edit
+                </button>
+                <Link
+                  href="/dashboard/habits"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 hover:text-white transition-colors"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Manage
+                </Link>
+              </div>
             </div>
 
             {/* Heatmap / Calendar Display-Only */}
@@ -140,6 +159,17 @@ export default function HabitAnalyticsDrawer({
               </div>
             </div>
           </div>
+
+          <HabitModal
+            isOpen={isEditModalOpen}
+            onOpenChange={(open) => {
+              setIsEditModalOpen(open);
+              if (!open) {
+                onOpenChange(false);
+              }
+            }}
+            habitToEdit={habit}
+          />
         </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>

@@ -6,7 +6,15 @@ import { checkOffHabit, deleteHabit } from "@/lib/actions/habit.actions";
 import { calculateStreak } from "@/lib/utils/date";
 import ConsistencyHeatmap from "../charts/ConsistencyHeatmap";
 
-export default function HabitItem({ habit }: { habit: any }) {
+interface HabitDTO {
+  _id: string;
+  title: string;
+  description?: string;
+  targetTime?: string | null;
+  completedDates: string[];
+}
+
+export default function HabitItem({ habit }: { habit: HabitDTO }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPending, startTransition] = useTransition();
   
