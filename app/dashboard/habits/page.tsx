@@ -1,6 +1,6 @@
 import { getHabits } from "@/lib/actions/habit.actions";
 import HabitList from "@/components/habits/HabitList";
-import CreateHabitModal from "@/components/habits/CreateHabitModal";
+import HabitModal from "@/components/habits/HabitModal";
 import EmptyState from "@/components/ui/EmptyState";
 import { Activity } from "lucide-react";
 
@@ -18,7 +18,7 @@ export default async function HabitsPage() {
             Build consistency. Engineered for zero-drag productivity.
           </p>
         </div>
-        <CreateHabitModal />
+        <HabitModal />
       </div>
 
       {habits.length === 0 ? (
