@@ -17,10 +17,10 @@ interface HabitDTO {
 export default function HabitItem({ habit }: { habit: HabitDTO }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPending, startTransition] = useTransition();
-  
+
   // To avoid constant re-evaluation of Date() across renders triggering hydration errors,
   // we initialize today's string on component mount via state, but Next.js usually
-  // prefers a stable client-side value. For the MVP, calling it here is fine because 
+  // prefers a stable client-side value. For the MVP, calling it here is fine because
   // it doesn't render server-side mismatched times (unless hydrated in a different timezone).
   const [todayStr] = useState(() => new Date().toLocaleDateString("en-CA"));
 
@@ -32,10 +32,13 @@ export default function HabitItem({ habit }: { habit: HabitDTO }) {
         ...state,
         completedDates: newCompletedDates,
       };
-    }
+    },
   );
 
-  const currentStreak = calculateStreak(optimisticHabit.completedDates, todayStr);
+  const currentStreak = calculateStreak(
+    optimisticHabit.completedDates,
+    todayStr,
+  );
   const isCompletedToday = optimisticHabit.completedDates.includes(todayStr);
 
   function handleCheckOff() {
@@ -66,7 +69,9 @@ export default function HabitItem({ habit }: { habit: HabitDTO }) {
   }
 
   return (
-    <div className={`flex bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-all duration-300 group relative overflow-hidden ${isPending ? "opacity-60" : ""}`}>
+    <div
+      className={`flex bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-all duration-300 group relative overflow-hidden ${isPending ? "opacity-60" : ""}`}
+    >
       {/* Decorative Glow */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-2xl rounded-full pointer-events-none" />
 
@@ -84,38 +89,52 @@ export default function HabitItem({ habit }: { habit: HabitDTO }) {
             {optimisticHabit.targetTime && (
               <div className="flex items-center gap-1.5 text-xs text-zinc-500 mt-2 font-medium">
                 <Clock size={13} />
-                <span>Target: {(() => {
-                  const [hStr, mStr] = optimisticHabit.targetTime.split(":");
-                  if (!hStr || !mStr) return optimisticHabit.targetTime;
-                  const hour = parseInt(hStr, 10);
-                  const ampm = hour >= 12 ? "PM" : "AM";
-                  const hour12 = hour % 12 || 12;
-                  return `${hour12}:${mStr} ${ampm}`;
-                })()}</span>
+                <span>
+                  Target:{" "}
+                  {(() => {
+                    const [hStr, mStr] = optimisticHabit.targetTime.split(":");
+                    if (!hStr || !mStr) return optimisticHabit.targetTime;
+                    const hour = parseInt(hStr, 10);
+                    const ampm = hour >= 12 ? "PM" : "AM";
+                    const hour12 = hour % 12 || 12;
+                    return `${hour12}:${mStr} ${ampm}`;
+                  })()}
+                </span>
               </div>
             )}
           </div>
-          
+
           <div className="flex items-center gap-3">
             {/* Streak Counter */}
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${currentStreak > 0 ? "bg-orange-500/10 border-orange-500/20 text-orange-400" : "bg-zinc-800 border-zinc-700 text-zinc-500"}`}>
-              <Flame size={16} className={currentStreak > 0 ? "fill-orange-400/50" : ""} />
-              <span className="font-bold text-sm tracking-wide">{currentStreak} Day{currentStreak === 1 ? "" : "s"}</span>
+            <div
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${currentStreak > 0 ? "bg-orange-500/10 border-orange-500/20 text-orange-400" : "bg-zinc-800 border-zinc-700 text-zinc-500"}`}
+            >
+              <Flame
+                size={16}
+                className={currentStreak > 0 ? "fill-orange-400/50" : ""}
+              />
+              <span className="font-bold text-sm tracking-wide">
+                {currentStreak} Day{currentStreak === 1 ? "" : "s"}
+              </span>
             </div>
-            
+
             <button
               onClick={handleDelete}
               disabled={isDeleting}
               className="text-zinc-500 hover:text-red-400 transition-colors hidden sm:block opacity-0 group-hover:opacity-100 p-2"
               title="Delete Habit"
             >
-              {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+              {isDeleting ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Trash2 size={16} />
+              )}
             </button>
           </div>
         </div>
 
         <div className="mt-8">
-          <ConsistencyHeatmap 
+          <ConsistencyHeatmap
             completedDates={optimisticHabit.completedDates}
             todayStr={todayStr}
             habitTitle={optimisticHabit.title}
@@ -124,8 +143,8 @@ export default function HabitItem({ habit }: { habit: HabitDTO }) {
 
         <div className="mt-6 flex items-center justify-between">
           <div className="text-xs font-medium text-zinc-500 uppercase tracking-widest">
-            {optimisticHabit.completedDates.length > 0 
-              ? `Last completed: ${optimisticHabit.completedDates[optimisticHabit.completedDates.length - 1] === todayStr ? 'Today' : optimisticHabit.completedDates[optimisticHabit.completedDates.length - 1]}`
+            {optimisticHabit.completedDates.length > 0
+              ? `Last completed: ${optimisticHabit.completedDates[optimisticHabit.completedDates.length - 1] === todayStr ? "Today" : optimisticHabit.completedDates[optimisticHabit.completedDates.length - 1]}`
               : "Not yet completed"}
           </div>
 
