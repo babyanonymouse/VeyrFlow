@@ -25,7 +25,7 @@ export default function Sidebar() {
     // z-40 — below modals (z-50) but above page content
     <aside className="fixed hidden md:flex flex-col w-64 h-screen z-40 border-r border-zinc-800 bg-zinc-950 px-4 py-6 gap-1">
       <Link href="/dashboard" className="flex items-center gap-2.5 px-3 mb-6 outline-none focus:ring-2 focus:ring-teal-500 rounded-md">
-        <Logo size={24} />
+        <Logo size={24} id="sidebar" />
         <span className="font-black text-xl tracking-tight text-white">VeyrFlow</span>
       </Link>
       

@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         nav={{
           title: (
             <div className="flex items-center gap-2">
-              <Logo size={20} className="animate-pulse" />
+              <Logo size={20} id="docs-nav" className="animate-pulse" />
               <span className="font-bold text-zinc-100">VeyrFlow Docs</span>
             </div>
           ),
