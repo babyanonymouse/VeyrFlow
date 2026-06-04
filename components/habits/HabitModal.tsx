@@ -53,7 +53,7 @@ export default function HabitModal({
   const isControlled = controlledIsOpen !== undefined;
 
   const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
-  const setIsOpen = isControlled ? controlledOnOpenChange : setInternalIsOpen;
+  const setIsOpen = controlledOnOpenChange ?? setInternalIsOpen;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -191,7 +191,7 @@ export default function HabitModal({
           const res = await deleteHabit(habitToEdit._id);
           if (res.success) {
             toast.success("Habit deleted");
-            if (setIsOpen) setIsOpen(false);
+            setIsOpen(false);
           }
         } catch (err: unknown) {
           const message =
@@ -228,7 +228,7 @@ export default function HabitModal({
           toast.error(res.error);
         } else {
           toast.success(habitToEdit ? "Habit updated" : "Habit created");
-          if (setIsOpen) setIsOpen(false);
+          setIsOpen(false);
         }
       } catch (err: unknown) {
         const message =
