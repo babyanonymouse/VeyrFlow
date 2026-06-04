@@ -1,8 +1,16 @@
 "use client";
 import { useState, useEffect, useRef, useTransition } from "react";
 import { Plus, Loader2, Clock, X, Keyboard, Trash2 } from "lucide-react";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { createHabit, updateHabit, deleteHabit } from "@/lib/actions/habit.actions";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import {
+  createHabit,
+  updateHabit,
+  deleteHabit,
+} from "@/lib/actions/habit.actions";
 import { toast } from "sonner";
 import * as chrono from "chrono-node";
 
@@ -25,7 +33,13 @@ function formatTargetTime(timeStr: string) {
   const parts = timeStr.split(":").map(Number);
   const hours = parts[0];
   const minutes = parts[1];
-  if (hours === undefined || minutes === undefined || isNaN(hours) || isNaN(minutes)) return timeStr;
+  if (
+    hours === undefined ||
+    minutes === undefined ||
+    isNaN(hours) ||
+    isNaN(minutes)
+  )
+    return timeStr;
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${pad(hours)}:${pad(minutes)}`;
 }
@@ -37,14 +51,14 @@ export default function HabitModal({
 }: HabitModalProps) {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isControlled = controlledIsOpen !== undefined;
-  
+
   const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
   const setIsOpen = isControlled ? controlledOnOpenChange : setInternalIsOpen;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [targetTime, setTargetTime] = useState("");
-  
+
   const [isMounted, setIsMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false);
@@ -72,7 +86,9 @@ export default function HabitModal({
     };
   }, []);
 
-  const [prevHabit, setPrevHabit] = useState<HabitDTO | null | undefined>(habitToEdit);
+  const [prevHabit, setPrevHabit] = useState<HabitDTO | null | undefined>(
+    habitToEdit,
+  );
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
 
   if (isOpen !== prevIsOpen || habitToEdit?._id !== prevHabit?._id) {
@@ -88,8 +104,12 @@ export default function HabitModal({
     }
   }
 
-  const selectedHour = targetTime ? parseInt(targetTime.split(":")[0] ?? "9", 10) : 9;
-  const selectedMinute = targetTime ? parseInt(targetTime.split(":")[1] ?? "0", 10) : 0;
+  const selectedHour = targetTime
+    ? parseInt(targetTime.split(":")[0] ?? "9", 10)
+    : 9;
+  const selectedMinute = targetTime
+    ? parseInt(targetTime.split(":")[1] ?? "0", 10)
+    : 0;
 
   function handleHourSelect(hour: number) {
     const minStr = String(selectedMinute).padStart(2, "0");
@@ -108,19 +128,22 @@ export default function HabitModal({
 
     // Keep ignoredMatches up-to-date
     const cleanIgnored = ignoredMatches.filter((phrase) =>
-      nextTitle.toLowerCase().includes(phrase.toLowerCase())
+      nextTitle.toLowerCase().includes(phrase.toLowerCase()),
     );
     if (cleanIgnored.length !== ignoredMatches.length) {
       setIgnoredMatches(cleanIgnored);
     }
 
     const parsed = chrono.parse(nextTitle, new Date(), { forwardDate: true });
-    
+
     // Find the first match that isn't ignored AND has a certain hour component
     const activeMatch = parsed.find((match) => {
       const matchText = match.text.trim().toLowerCase();
       const hasCertainHour = match.start.isCertain("hour");
-      return hasCertainHour && !cleanIgnored.some((ignored) => ignored.toLowerCase() === matchText);
+      return (
+        hasCertainHour &&
+        !cleanIgnored.some((ignored) => ignored.toLowerCase() === matchText)
+      );
     });
 
     if (!activeMatch) {
@@ -135,9 +158,11 @@ export default function HabitModal({
     if (parsedTimeText !== matchText) {
       const hour = activeMatch.start.get("hour");
       const minute = activeMatch.start.get("minute") ?? 0;
-      const pad = (n: number) => String(n).padStart(2, "0");
-      setTargetTime(`${pad(hour)}:${pad(minute)}`);
-      setParsedTimeText(matchText);
+      if (hour !== null) {
+        const pad = (n: number) => String(n).padStart(2, "0");
+        setTargetTime(`${pad(hour)}:${pad(minute)}`);
+        setParsedTimeText(matchText);
+      }
     }
   }
 
@@ -158,9 +183,9 @@ export default function HabitModal({
     } else {
       if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
       setIsConfirmingDelete(false);
-      
+
       if (!habitToEdit?._id) return;
-      
+
       startTransition(async () => {
         try {
           const res = await deleteHabit(habitToEdit._id);
@@ -169,7 +194,8 @@ export default function HabitModal({
             if (setIsOpen) setIsOpen(false);
           }
         } catch (err: unknown) {
-          const message = err instanceof Error ? err.message : "Failed to delete habit";
+          const message =
+            err instanceof Error ? err.message : "Failed to delete habit";
           toast.error(message);
         }
       });
@@ -205,7 +231,8 @@ export default function HabitModal({
           if (setIsOpen) setIsOpen(false);
         }
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "An unexpected error occurred";
+        const message =
+          err instanceof Error ? err.message : "An unexpected error occurred";
         toast.error(message);
       }
     });
@@ -231,7 +258,7 @@ export default function HabitModal({
         <h2 className="text-xl font-bold text-white mb-4">
           {habitToEdit ? "Edit Habit" : "Create New Habit"}
         </h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-zinc-400 mb-1">
@@ -303,7 +330,11 @@ export default function HabitModal({
                   onClick={() => setIsTimeDialogOpen(true)}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-4 pr-16 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors flex items-center justify-between text-left cursor-pointer"
                 >
-                  <span>{targetTime ? formatTargetTime(targetTime) : "Set target time"}</span>
+                  <span>
+                    {targetTime
+                      ? formatTargetTime(targetTime)
+                      : "Set target time"}
+                  </span>
                 </button>
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                   {targetTime && (
@@ -319,7 +350,10 @@ export default function HabitModal({
                       <X size={14} />
                     </button>
                   )}
-                  <Clock size={16} className="text-zinc-500 pointer-events-none" />
+                  <Clock
+                    size={16}
+                    className="text-zinc-500 pointer-events-none"
+                  />
                 </div>
               </div>
             ) : (
@@ -330,7 +364,11 @@ export default function HabitModal({
                       type="button"
                       className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-4 pr-16 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors flex items-center justify-between text-left cursor-pointer"
                     >
-                      <span>{targetTime ? formatTargetTime(targetTime) : "Set target time"}</span>
+                      <span>
+                        {targetTime
+                          ? formatTargetTime(targetTime)
+                          : "Set target time"}
+                      </span>
                     </button>
                   </PopoverTrigger>
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -347,10 +385,16 @@ export default function HabitModal({
                         <X size={14} />
                       </button>
                     )}
-                    <Clock size={16} className="text-zinc-500 pointer-events-none" />
+                    <Clock
+                      size={16}
+                      className="text-zinc-500 pointer-events-none"
+                    />
                   </div>
                 </div>
-                <PopoverContent className="w-auto p-4 bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl" align="start">
+                <PopoverContent
+                  className="w-auto p-4 bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl"
+                  align="start"
+                >
                   <MaterialTimePicker
                     selectedHour={selectedHour}
                     selectedMinute={selectedMinute}
@@ -377,7 +421,9 @@ export default function HabitModal({
                   }`}
                 >
                   <Trash2 size={14} />
-                  <span>{isConfirmingDelete ? "Confirm Delete?" : "Delete Habit"}</span>
+                  <span>
+                    {isConfirmingDelete ? "Confirm Delete?" : "Delete Habit"}
+                  </span>
                 </button>
               )}
             </div>
@@ -448,7 +494,9 @@ function MaterialTimePicker({
   onCancel?: () => void;
   onOk?: () => void;
 }) {
-  const [selectionMode, setSelectionMode] = useState<"hours" | "minutes">("hours");
+  const [selectionMode, setSelectionMode] = useState<"hours" | "minutes">(
+    "hours",
+  );
   const [isManualInput, setIsManualInput] = useState(false);
 
   const isPm = selectedHour >= 12;
@@ -483,12 +531,17 @@ function MaterialTimePicker({
 
   const [typedHour, setTypedHour] = useState(displayHourStr);
   const [typedMinute, setTypedMinute] = useState(displayMinuteStr);
-  
+
   const [prevSelectedHour, setPrevSelectedHour] = useState(selectedHour);
   const [prevSelectedMinute, setPrevSelectedMinute] = useState(selectedMinute);
   const [prevIsManualInput, setPrevIsManualInput] = useState(isManualInput);
 
-  if (!isManualInput && (selectedHour !== prevSelectedHour || selectedMinute !== prevSelectedMinute || isManualInput !== prevIsManualInput)) {
+  if (
+    !isManualInput &&
+    (selectedHour !== prevSelectedHour ||
+      selectedMinute !== prevSelectedMinute ||
+      isManualInput !== prevIsManualInput)
+  ) {
     setPrevSelectedHour(selectedHour);
     setPrevSelectedMinute(selectedMinute);
     setPrevIsManualInput(isManualInput);
@@ -555,7 +608,9 @@ function MaterialTimePicker({
             type="button"
             onClick={() => handleAmPmChange("AM")}
             className={`transition-colors cursor-pointer ${
-              amPm === "AM" ? "text-indigo-400" : "text-zinc-500 hover:text-zinc-400"
+              amPm === "AM"
+                ? "text-indigo-400"
+                : "text-zinc-500 hover:text-zinc-400"
             }`}
           >
             AM
@@ -564,7 +619,9 @@ function MaterialTimePicker({
             type="button"
             onClick={() => handleAmPmChange("PM")}
             className={`transition-colors cursor-pointer ${
-              amPm === "PM" ? "text-indigo-400" : "text-zinc-500 hover:text-zinc-400"
+              amPm === "PM"
+                ? "text-indigo-400"
+                : "text-zinc-500 hover:text-zinc-400"
             }`}
           >
             PM
@@ -580,7 +637,9 @@ function MaterialTimePicker({
                 type="text"
                 maxLength={2}
                 value={typedHour}
-                onChange={(e) => setTypedHour(e.target.value.replace(/\D/g, ""))}
+                onChange={(e) =>
+                  setTypedHour(e.target.value.replace(/\D/g, ""))
+                }
                 placeholder="HH"
                 className="w-14 h-12 rounded-lg bg-zinc-950 border border-zinc-800 text-center text-lg text-zinc-100 outline-none focus:border-indigo-500/50"
               />
@@ -589,7 +648,9 @@ function MaterialTimePicker({
                 type="text"
                 maxLength={2}
                 value={typedMinute}
-                onChange={(e) => setTypedMinute(e.target.value.replace(/\D/g, ""))}
+                onChange={(e) =>
+                  setTypedMinute(e.target.value.replace(/\D/g, ""))
+                }
                 placeholder="MM"
                 className="w-14 h-12 rounded-lg bg-zinc-950 border border-zinc-800 text-center text-lg text-zinc-100 outline-none focus:border-indigo-500/50"
               />
