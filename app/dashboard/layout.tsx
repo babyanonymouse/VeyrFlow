@@ -1,8 +1,9 @@
 import Sidebar from "@/components/ui/Sidebar";
 import BottomNav from "@/components/ui/BottomNav";
-import { Activity, Settings, BookOpen } from "lucide-react";
+import { Settings, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
+import Logo from "@/components/ui/Logo";
 
 export default function DashboardLayout({
   children,
@@ -14,8 +15,8 @@ export default function DashboardLayout({
       {/* Mobile Top Header — hidden on desktop, provides logo, settings, docs, and account */}
       <header className="flex md:hidden items-center justify-between px-6 py-4 border-b border-zinc-800 sticky top-0 z-35 backdrop-blur-md bg-zinc-950/90">
         <Link href="/dashboard" className="flex items-center gap-2 outline-none">
-          <Activity className="w-5 h-5 text-indigo-400" />
-          <span className="font-bold tracking-tight text-white">HabitFlow</span>
+          <Logo size={20} />
+          <span className="font-bold tracking-tight text-white">VeyrFlow</span>
         </Link>
         <div className="flex items-center gap-4.5">
           <Link href="/docs" className="text-zinc-400 hover:text-white transition-colors p-1" title="Docs">

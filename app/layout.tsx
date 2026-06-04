@@ -18,12 +18,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HabitFlow",
+  title: "VeyrFlow",
+  applicationName: "VeyrFlow",
   description: "A production-grade app to track tasks, habits, and recurring goals.",
   appleWebApp: {
     capable: true,
-    title: "HabitFlow",
+    title: "VeyrFlow",
     statusBarStyle: "black-translucent",
+  },
+  openGraph: {
+    siteName: "VeyrFlow",
   },
 };
 
@@ -47,13 +51,13 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} bg-zinc-950 antialiased`}
         >
           <NextTopLoader
-            color="#818cf8"
+            color="#2dd4bf"
             showSpinner={false}
             crawlSpeed={200}
             height={2}
             easing="ease"
             speed={200}
-            shadow="0 0 10px #818cf8,0 0 5px #818cf8"
+            shadow="0 0 10px #2dd4bf,0 0 5px #2dd4bf"
           />
           <SerwistRegistrar>
             {children}
@@ -61,10 +65,10 @@ export default function RootLayout({
               position="top-right" 
               toastOptions={{
                 classNames: {
-                  toast: 'group flex items-center bg-zinc-950/80 backdrop-blur-xl border border-indigo-500/20 text-zinc-100 shadow-2xl rounded-xl p-4',
+                  toast: 'group flex items-center bg-zinc-950/80 backdrop-blur-xl border border-teal-500/20 text-zinc-100 shadow-2xl rounded-xl p-4',
                   title: 'text-sm font-medium tracking-wide',
                   description: 'text-xs text-zinc-400',
-                  actionButton: 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors',
+                  actionButton: 'bg-teal-500/20 text-teal-300 hover:bg-teal-500/30 transition-colors',
                   cancelButton: 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors',
                   success: 'border-l-2 border-l-teal-400/50',
                   error: 'border-l-2 border-l-red-400/50',
