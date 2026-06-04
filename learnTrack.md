@@ -1,12 +1,12 @@
-# 🧠 HabitFlow Learning Tracker
+# 🧠 VeyrFlow Learning Tracker
 
-**Project:** HabitFlow – Smart To-Do & Habits App
+**Project:** VeyrFlow – Smart To-Do & Habits App
 
 **Goal:** Learn full-stack development, deployment, and optional AI integration through a real, deployable project.
 
 ## 1. Frontend Skills
 
-| Concept / Skill       | What to Learn                      | How to Practice in HabitFlow                   | Status |
+| Concept / Skill       | What to Learn                      | How to Practice in VeyrFlow                   | Status |
 | --------------------- | ---------------------------------- | ---------------------------------------------- | ------ |
 | React Components      | Functional components, props       | Build TaskCard, HabitCard, TaskForm            | ✅     |
 | React Hooks           | useState, useEffect, derived state | Manage task list, form input, API fetch states | ✅     |
@@ -19,7 +19,7 @@
 
 ## 2. Backend Skills
 
-| Concept / Skill    | What to Learn           | How to Practice in HabitFlow        | Status |
+| Concept / Skill    | What to Learn           | How to Practice in VeyrFlow        | Status |
 | ------------------ | ----------------------- | ----------------------------------- | ------ |
 | Next.js API Routes | Server Actions/Endpoints| Create Server Actions for CRUD      | ✅     |
 | RESTful CRUD       | GET, POST, PUT, DELETE  | Implement full task/habit lifecycle | ✅     |
@@ -28,7 +28,7 @@
 
 ## 3. Database Skills
 
-| Concept / Skill | What to Learn                | How to Practice in HabitFlow  | Status |
+| Concept / Skill | What to Learn                | How to Practice in VeyrFlow  | Status |
 | --------------- | ---------------------------- | ----------------------------- | ------ |
 | MongoDB Basics  | Collections, documents       | tasks and habits collections  | ✅     |
 | Mongoose        | Schemas, models              | Task.js, Habit.js models      | ✅     |
@@ -37,7 +37,7 @@
 
 ## 4. Integration & Full-Stack Skills
 
-| Concept / Skill | What to Learn                | How to Practice in HabitFlow      | Status |
+| Concept / Skill | What to Learn                | How to Practice in VeyrFlow      | Status |
 | --------------- | ---------------------------- | --------------------------------- | ------ |
 | API Consumption | Server Actions fetch         | Call Server Actions from frontend | ✅     |
 | State Sync      | React + backend              | Update UI on successful API calls | ✅     |
@@ -46,7 +46,7 @@
 
 ## 5. Optional AI/Advanced Features
 
-| Concept / Skill       | What to Learn        | How to Practice in HabitFlow            | Status |
+| Concept / Skill       | What to Learn        | How to Practice in VeyrFlow            | Status |
 | --------------------- | -------------------- | --------------------------------------- | ------ |
 | OpenAI API            | Fetch AI suggestions | Recommend habit improvements            | ⬜     |
 | Asynchronous Requests | async/await          | Call AI API and update task suggestions | ⬜     |
@@ -54,7 +54,7 @@
 
 ## 6. Deployment & DevOps Skills
 
-| Concept / Skill       | What to Learn         | How to Practice in HabitFlow    | Status |
+| Concept / Skill       | What to Learn         | How to Practice in VeyrFlow    | Status |
 | --------------------- | --------------------- | ------------------------------- | ------ |
 | Environment Variables | .env.local            | Store MongoDB URI, API keys     | ✅     |
 | Hosting               | Vercel / Render / AWS | Deploy full-stack app live      | ✅     |
@@ -63,7 +63,7 @@
 
 ## 7. UX / Product Skills
 
-| Concept / Skill   | What to Learn            | How to Practice in HabitFlow            | Status |
+| Concept / Skill   | What to Learn            | How to Practice in VeyrFlow            | Status |
 | ----------------- | ------------------------ | --------------------------------------- | ------ |
 | User Feedback     | Messages, alerts         | Show success/error notifications        | ⬜     |
 | Responsive Design | Mobile + Desktop         | Test on multiple screen sizes           | ✅     |

@@ -70,19 +70,19 @@ export default function PwaInstallPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="relative overflow-hidden bg-zinc-950/80 backdrop-blur-xl border border-indigo-500/20 rounded-xl p-4 shadow-2xl flex items-center justify-between gap-4">
+    <div className="relative overflow-hidden bg-zinc-950/80 backdrop-blur-xl border border-teal-500/20 rounded-xl p-4 shadow-2xl flex items-center justify-between gap-4">
       {/* VeyrFlow Dynamic Logo Graphic background element */}
-      <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/5 blur-2xl rounded-full pointer-events-none" />
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-500/5 blur-2xl rounded-full pointer-events-none" />
 
       <div className="flex items-start gap-3 relative z-10 flex-1 min-w-0">
-        <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shrink-0">
+        <div className="p-2.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shrink-0">
           <Download size={20} />
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="text-sm font-bold text-zinc-100 tracking-wide">Install VeyrFlow</h3>
           {isIOS ? (
             <p className="text-xs text-zinc-400 mt-1 leading-relaxed flex flex-wrap items-center gap-1">
-              To install, tap <Share size={14} className="inline text-indigo-400 mx-0.5" /> below, then select &apos;Add to Home Screen&apos; <PlusSquare size={14} className="inline text-indigo-400 mx-0.5" />.
+              To install, tap <Share size={14} className="inline text-teal-400 mx-0.5" /> below, then select &apos;Add to Home Screen&apos; <PlusSquare size={14} className="inline text-teal-400 mx-0.5" />.
             </p>
           ) : (
             <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
@@ -96,7 +96,7 @@ export default function PwaInstallPrompt() {
         {!isIOS && (
           <button
             onClick={handleInstallClick}
-            className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors cursor-pointer active:scale-[0.98] transition-transform duration-75 shadow-[0_0_15px_-3px_rgba(99,102,241,0.5)]"
+            className="px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs transition-colors cursor-pointer active:scale-[0.98] transition-transform duration-75 shadow-[0_0_15px_-3px_rgba(45,212,191,0.5)]"
           >
             Install
           </button>

@@ -1,6 +1,6 @@
 # Time & Date Handling Design for Tasks and Habits
 
-This document describes how to implement time and date functionality for tasks and habits in HabitFlow using MongoDB/Mongoose and Next.js. It covers what you want to track, how to shape your schemas, and how to use dates in the UI.
+This document describes how to implement time and date functionality for tasks and habits in VeyrFlow using MongoDB/Mongoose and Next.js. It covers what you want to track, how to shape your schemas, and how to use dates in the UI.
 
 ---
 
@@ -146,7 +146,7 @@ For now:
 
 ## 6. Next Steps in Your Codebase
 
-To adopt this in HabitFlow:
+To adopt this in VeyrFlow:
 
 1. Update your Mongoose schemas:
    - Keep task absolute time fields as `Date`.
