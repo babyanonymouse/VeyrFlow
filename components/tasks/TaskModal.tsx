@@ -101,12 +101,7 @@ export default function TaskModal({
 
   function applyDate(nextDate: Date, closeDrawer = false) {
     const base = new Date(nextDate);
-    const current = selectedDate ?? (() => {
-      const d = new Date();
-      d.setHours(9, 0, 0, 0);
-      return d;
-    })();
-    base.setHours(current.getHours(), current.getMinutes(), 0, 0);
+    base.setHours(0, 0, 0, 0);
     setDeadline(toLocalDateTimeInputValue(base));
     setParsedDateText(null);
     if (closeDrawer) {
@@ -449,11 +444,11 @@ function DesktopDatePickerContent({
   handleHourSelect: (hour: number) => void;
   handleMinuteSelect: (minute: number) => void;
 }) {
-  const [displayedMonth, setDisplayedMonth] = useState<Date>(selectedDate ?? new Date());
+  const [calendarMonth, setCalendarMonth] = useState<Date>(selectedDate ?? new Date());
 
   useEffect(() => {
     if (selectedDate) {
-      setDisplayedMonth(selectedDate);
+      setCalendarMonth(selectedDate);
     }
   }, [selectedDate]);
 
@@ -487,28 +482,40 @@ function DesktopDatePickerContent({
         <div className="flex gap-1.5 justify-between">
           <button
             type="button"
-            onClick={() => applyDate(todayDate, false)}
+            onClick={() => {
+              applyDate(todayDate, false);
+              setCalendarMonth(todayDate);
+            }}
             className={getPresetClass(isTodayActive)}
           >
             Today
           </button>
           <button
             type="button"
-            onClick={() => applyDate(tomorrowDate, false)}
+            onClick={() => {
+              applyDate(tomorrowDate, false);
+              setCalendarMonth(tomorrowDate);
+            }}
             className={getPresetClass(isTomorrowActive)}
           >
             Tomorrow
           </button>
           <button
             type="button"
-            onClick={() => applyDate(weekendDate, false)}
+            onClick={() => {
+              applyDate(weekendDate, false);
+              setCalendarMonth(weekendDate);
+            }}
             className={getPresetClass(isWeekendActive)}
           >
             Weekend
           </button>
           <button
             type="button"
-            onClick={() => applyDate(nextWeekDate, false)}
+            onClick={() => {
+              applyDate(nextWeekDate, false);
+              setCalendarMonth(nextWeekDate);
+            }}
             className={getPresetClass(isNextWeekActive)}
           >
             Next Week
@@ -518,13 +525,14 @@ function DesktopDatePickerContent({
         {/* Calendar */}
         <Calendar
           mode="single"
-          selected={selectedDate ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()) : undefined}
+          selected={selectedDate ? new Date(new Date(selectedDate).setHours(0, 0, 0, 0)) : undefined}
           onSelect={(date) => {
             if (!date) return;
             applyDate(date, false);
+            setCalendarMonth(date);
           }}
-          month={displayedMonth}
-          onMonthChange={setDisplayedMonth}
+          month={calendarMonth}
+          onMonthChange={setCalendarMonth}
           className="rounded-xl border border-zinc-800/70 bg-zinc-950/50 p-2"
         />
       </div>
@@ -564,11 +572,11 @@ function MobileDatePickerContent({
   setDrawerOpen: (open: boolean) => void;
 }) {
   const [isTimeDialogOpen, setIsTimeDialogOpen] = useState(false);
-  const [displayedMonth, setDisplayedMonth] = useState<Date>(selectedDate ?? new Date());
+  const [calendarMonth, setCalendarMonth] = useState<Date>(selectedDate ?? new Date());
 
   useEffect(() => {
     if (selectedDate) {
-      setDisplayedMonth(selectedDate);
+      setCalendarMonth(selectedDate);
     }
   }, [selectedDate]);
 
@@ -614,7 +622,10 @@ function MobileDatePickerContent({
       <div className="grid grid-cols-4 gap-2">
         <button
           type="button"
-          onClick={() => applyDate(todayDate, false)}
+          onClick={() => {
+            applyDate(todayDate, false);
+            setCalendarMonth(todayDate);
+          }}
           className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/30 transition-colors cursor-pointer"
         >
           <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all ${
@@ -628,7 +639,10 @@ function MobileDatePickerContent({
         </button>
         <button
           type="button"
-          onClick={() => applyDate(tomorrowDate, false)}
+          onClick={() => {
+            applyDate(tomorrowDate, false);
+            setCalendarMonth(tomorrowDate);
+          }}
           className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/30 transition-colors cursor-pointer"
         >
           <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all ${
@@ -642,7 +656,10 @@ function MobileDatePickerContent({
         </button>
         <button
           type="button"
-          onClick={() => applyDate(weekendDate, false)}
+          onClick={() => {
+            applyDate(weekendDate, false);
+            setCalendarMonth(weekendDate);
+          }}
           className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/30 transition-colors cursor-pointer"
         >
           <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all ${
@@ -656,7 +673,10 @@ function MobileDatePickerContent({
         </button>
         <button
           type="button"
-          onClick={() => applyDate(nextWeekDate, false)}
+          onClick={() => {
+            applyDate(nextWeekDate, false);
+            setCalendarMonth(nextWeekDate);
+          }}
           className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-zinc-900/30 transition-colors cursor-pointer"
         >
           <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-all ${
@@ -674,13 +694,14 @@ function MobileDatePickerContent({
       <div className="flex justify-center">
         <Calendar
           mode="single"
-          selected={selectedDate ? new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()) : undefined}
+          selected={selectedDate ? new Date(new Date(selectedDate).setHours(0, 0, 0, 0)) : undefined}
           onSelect={(date) => {
             if (!date) return;
             applyDate(date, false);
+            setCalendarMonth(date);
           }}
-          month={displayedMonth}
-          onMonthChange={setDisplayedMonth}
+          month={calendarMonth}
+          onMonthChange={setCalendarMonth}
           className="rounded-xl border border-zinc-800/70 bg-zinc-950/50 p-2"
         />
       </div>
