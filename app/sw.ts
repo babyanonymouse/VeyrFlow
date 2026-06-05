@@ -56,6 +56,9 @@ const serwist = new Serwist({
       },
       handler: new NetworkFirst({
         cacheName: "veyrflow-read-cache",
+        matchOptions: {
+          ignoreSearch: true,
+        },
       }),
     },
     ...defaultCache,

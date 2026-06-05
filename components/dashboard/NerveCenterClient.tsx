@@ -80,7 +80,18 @@ export default function NerveCenterClient({ initialData }: { initialData: Dashbo
         setOverrideSummary(summary as unknown as DashboardSummary);
       }
     } catch (e) {
-      console.error("Failed to check off habit optimistically", e);
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        console.log("Mutation queued for background sync");
+        setOverrideSummary((prev) => {
+          const base = prev || initialData;
+          return {
+            ...base,
+            pendingHabits: base.pendingHabits.filter((h) => h._id !== habitId),
+          };
+        });
+      } else {
+        console.error("Failed to check off habit optimistically", e);
+      }
     }
   };
 
@@ -96,7 +107,18 @@ export default function NerveCenterClient({ initialData }: { initialData: Dashbo
         setOverrideSummary(summary as unknown as DashboardSummary);
       }
     } catch (e) {
-      console.error("Failed to complete task optimistically", e);
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        console.log("Mutation queued for background sync");
+        setOverrideSummary((prev) => {
+          const base = prev || initialData;
+          return {
+            ...base,
+            priorityTasks: base.priorityTasks.filter((t) => t._id !== taskId),
+          };
+        });
+      } else {
+        console.error("Failed to complete task optimistically", e);
+      }
     }
   };
 
@@ -126,7 +148,24 @@ export default function NerveCenterClient({ initialData }: { initialData: Dashbo
         const summary = await getDashboardSummary(clientToday);
         setOverrideSummary(summary as unknown as DashboardSummary);
       } catch (err) {
-        console.error("Failed to update task", err);
+        if (typeof navigator !== "undefined" && !navigator.onLine) {
+          console.log("Mutation queued for background sync");
+          const toServer = taskCreateSchema.parse({
+            ...values,
+            deadline: toUtcDeadlineISOString(values.deadline),
+          });
+          setOverrideSummary((prev) => {
+            const base = prev || initialData;
+            return {
+              ...base,
+              priorityTasks: base.priorityTasks.map((t) =>
+                t._id === taskId ? ({ ...t, ...toServer } as TaskDTO) : t
+              ),
+            };
+          });
+        } else {
+          console.error("Failed to update task", err);
+        }
       }
     });
   };
