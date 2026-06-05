@@ -66,19 +66,36 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
         deadline: toUtcDeadlineISOString(values.deadline),
       });
 
-      if (editing) {
-        const updated = await updateTask({ _id: editing._id, ...toServer });
-        setTasks((prev) => prev.map((t) => (t._id === updated._id ? updated : t)));
-        setOptimisticTasks(
-          optimisticTasks.map((t) => (t._id === updated._id ? updated : t))
-        );
-      } else {
-        const created = await createTask(toServer);
-        setTasks((prev) => [created, ...prev]);
-        setOptimisticTasks([created, ...optimisticTasks]);
+      try {
+        if (editing) {
+          const updated = await updateTask({ _id: editing._id, ...toServer });
+          setTasks((prev) => prev.map((t) => (t._id === updated._id ? updated : t)));
+          setOptimisticTasks(
+            optimisticTasks.map((t) => (t._id === updated._id ? updated : t))
+          );
+        } else {
+          const created = await createTask(toServer);
+          setTasks((prev) => [created, ...prev]);
+          setOptimisticTasks([created, ...optimisticTasks]);
+        }
+      } catch (error) {
+        if (typeof navigator !== "undefined" && !navigator.onLine) {
+          console.log("Mutation queued for background sync");
+          if (editing) {
+            setTasks((prev) => prev.map((t) => (t._id === editing._id ? { ...t, ...toServer } as TaskDTO : t)));
+            setOptimisticTasks(optimisticTasks.map((t) => (t._id === editing._id ? { ...t, ...toServer } as TaskDTO : t)));
+          } else {
+            const tempTask = { _id: "temp-" + Date.now(), ...toServer, isCompleted: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as TaskDTO;
+            setTasks((prev) => [tempTask, ...prev]);
+            setOptimisticTasks([tempTask, ...optimisticTasks]);
+          }
+        } else {
+          throw error;
+        }
+      } finally {
+        setModalOpen(false);
+        setEditing(null);
       }
-      setModalOpen(false);
-      setEditing(null);
     });
   }
 
@@ -89,7 +106,12 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
       await deleteTask(id);
       setTasks((prev) => prev.filter((t) => t._id !== id));
     } catch (err) {
-      console.error("Failed to delete task:", err);
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        console.log("Mutation queued for background sync");
+        setTasks((prev) => prev.filter((t) => t._id !== id));
+      } else {
+        console.error("Failed to delete task:", err);
+      }
     }
   }
 
@@ -106,7 +128,12 @@ export default function TasksClient({ initialTasks }: { initialTasks: TaskDTO[] 
       });
       setTasks((prev) => prev.map((t) => (t._id === updated._id ? updated : t)));
     } catch (err) {
-      console.error("Failed to toggle task completion:", err);
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        console.log("Mutation queued for background sync");
+        setTasks((prev) => prev.map((t) => (t._id === task._id ? { ...t, isCompleted: nextCompleted } : t)));
+      } else {
+        console.error("Failed to toggle task completion:", err);
+      }
     }
   }
 
