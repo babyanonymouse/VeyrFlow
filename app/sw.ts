@@ -3,6 +3,31 @@
 import { defaultCache } from "@serwist/turbopack/worker";
 import { Serwist, NetworkFirst, NetworkOnly, BackgroundSyncPlugin } from "serwist";
 
+import { BackgroundSyncQueue } from "serwist";
+
+const mutationQueue = new BackgroundSyncQueue("veyrflow-mutations", {
+  maxRetentionTime: 24 * 60, // 24 hours in minutes
+  onSync: async ({ queue }) => {
+    await queue.replayRequests();
+    const clients = await self.clients.matchAll();
+    for (const client of clients) {
+      client.postMessage({ type: "SYNC_COMPLETE" });
+    }
+  },
+});
+
+const bgSyncPlugin = {
+  fetchDidFail: async ({ request }: { request: Request }) => {
+    // Proactively inject the Origin header for Next.js CSRF protection
+    const headers = new Headers(request.headers);
+    if (!headers.has("Origin") || headers.get("Origin") === "null") {
+      headers.set("Origin", self.location.origin);
+    }
+    const safeRequest = new Request(request, { headers });
+    await mutationQueue.pushRequest({ request: safeRequest });
+  },
+};
+
 declare global {
   interface ServiceWorkerGlobalScope {
     __SW_MANIFEST: Array<
@@ -22,9 +47,7 @@ const serwist = new Serwist({
       matcher: ({ request }) => ["POST", "PUT", "DELETE"].includes(request.method),
       handler: new NetworkOnly({
         plugins: [
-          new BackgroundSyncPlugin("veyrflow-mutations", {
-            maxRetentionTime: 24 * 60, // 24 hours in minutes
-          }),
+          bgSyncPlugin,
           {
             handlerDidError: async ({ request }) => {
               // Invisibly swallow the network error and return a mock successful response
@@ -97,4 +120,16 @@ self.addEventListener("notificationclick", (event) => {
       }
     })
   );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "REPLAY_MUTATIONS") {
+    mutationQueue.replayRequests().then(() => {
+      self.clients.matchAll().then((clients) => {
+        for (const client of clients) {
+          client.postMessage({ type: "SYNC_COMPLETE" });
+        }
+      });
+    });
+  }
 });
