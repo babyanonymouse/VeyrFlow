@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
 import SerwistRegistrar from "./serwist/SerwistRegistrar";
+import NetworkListener from "../components/NetworkListener";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -61,6 +62,7 @@ export default function RootLayout({
           />
           <SerwistRegistrar>
             {children}
+            <NetworkListener />
             <Toaster 
               position="top-right" 
               toastOptions={{
