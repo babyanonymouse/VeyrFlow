@@ -18,12 +18,38 @@ const mutationQueue = new BackgroundSyncQueue("veyrflow-mutations", {
 
 const bgSyncPlugin = {
   fetchDidFail: async ({ request }: { request: Request }) => {
+    // 1. Clone the original request to safely read its body without consuming it
+    const reqClone = request.clone();
+
+    // 2. Explicitly reconstruct headers to survive IndexedDB serialization
+    const headers = new Headers();
+    for (const [key, value] of reqClone.headers.entries()) {
+      headers.set(key, value);
+    }
+
     // Proactively inject the Origin header for Next.js CSRF protection
-    const headers = new Headers(request.headers);
     if (!headers.has("Origin") || headers.get("Origin") === "null") {
       headers.set("Origin", self.location.origin);
     }
-    const safeRequest = new Request(request, { headers });
+
+    // Explicitly guarantee Next-Action survives
+    if (reqClone.headers.has("Next-Action")) {
+      headers.set("Next-Action", reqClone.headers.get("Next-Action") as string);
+    }
+
+    // 3. Reconstruct the Request object, explicitly passing the body and credentials
+    // The `credentials: "include" | "same-origin"` is strictly required for 
+    // the browser to automatically attach the Cookie header during the SW background replay
+    const safeRequest = new Request(reqClone.url, {
+      method: reqClone.method,
+      headers: headers,
+      body: await reqClone.blob(),
+      mode: reqClone.mode === 'navigate' ? 'cors' : reqClone.mode, // Prevent navigation mode errors in fetch
+      credentials: reqClone.credentials || "include", // Ensure cookies are sent
+      redirect: reqClone.redirect,
+      referrer: reqClone.referrer,
+    });
+
     await mutationQueue.pushRequest({ request: safeRequest });
   },
 };
