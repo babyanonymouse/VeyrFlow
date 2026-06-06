@@ -39,7 +39,7 @@ export default function PushNotificationToggle() {
           Push Notifications
         </h2>
         <p className="text-xs text-zinc-400 leading-relaxed">
-          Push notifications are not supported on this browser or device. Ensure you are using a compatible browser like Chrome, Firefox, or Safari, and that your connection is secure (HTTPS).
+          Push notifications are not supported or are disabled (e.g., in local development mode). Ensure you are running a production build locally (`pnpm build && pnpm start`), using a compatible browser like Chrome, Firefox, or Safari, and that your connection is secure (HTTPS).
         </p>
       </section>
     );
