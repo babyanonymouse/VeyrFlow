@@ -8,28 +8,41 @@ export function usePushNotifications() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const checkSubscription = useCallback(async () => {
-    if (typeof window === "undefined") return;
-    
-    const supported = "serviceWorker" in navigator && "PushManager" in window;
-    setIsSupported(supported);
+  useEffect(() => {
+    let active = true;
 
-    if (supported) {
-      setPermission(Notification.permission);
-      try {
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.getSubscription();
-        setIsSubscribed(!!subscription);
-      } catch (err) {
-        console.error("Error checking push subscription status:", err);
+    async function check() {
+      if (typeof window === "undefined") return;
+
+      const supported = "serviceWorker" in navigator && "PushManager" in window;
+      let subscribed = false;
+      let perm: NotificationPermission = "default";
+
+      if (supported) {
+        perm = Notification.permission;
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          const subscription = await registration.pushManager.getSubscription();
+          subscribed = !!subscription;
+        } catch (err) {
+          console.error("Error checking push subscription status:", err);
+        }
+      }
+
+      if (active) {
+        setIsSupported(supported);
+        setPermission(perm);
+        setIsSubscribed(subscribed);
+        setLoading(false);
       }
     }
-    setLoading(false);
-  }, []);
 
-  useEffect(() => {
-    checkSubscription();
-  }, [checkSubscription]);
+    check();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const subscribe = async () => {
     setLoading(true);
@@ -38,8 +51,9 @@ export function usePushNotifications() {
       await subscribeToPushNotifications();
       setIsSubscribed(true);
       setPermission(Notification.permission);
-    } catch (err: any) {
-      setError(err.message || "Failed to subscribe.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to subscribe.";
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
@@ -52,8 +66,9 @@ export function usePushNotifications() {
     try {
       await unsubscribeFromPushNotifications();
       setIsSubscribed(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to unsubscribe.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to unsubscribe.";
+      setError(message);
       throw err;
     } finally {
       setLoading(false);
