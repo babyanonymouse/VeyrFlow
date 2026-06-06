@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Shield, Sparkles, Monitor, ArrowUpFromLine, Download, CheckCircle2, Sliders } from "lucide-react";
+import PushNotificationToggle from "@/components/settings/PushNotificationToggle";
 
 export default function SettingsPage() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -149,6 +150,9 @@ export default function SettingsPage() {
             </div>
           )}
         </section>
+
+        {/* Card 3: Push Notifications */}
+        <PushNotificationToggle />
       </div>
     </div>
   );
