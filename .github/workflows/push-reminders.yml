@@ -2,7 +2,7 @@ name: Dispatch Push Reminders
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -11,6 +11,6 @@ jobs:
     steps:
       - name: Trigger Push Reminders Cron
         run: |
-          curl -s -X GET "https://[YOUR-PRODUCTION-URL]/api/cron/reminders" \
+          curl -s -X GET "https://veyrflow.vercel.app/api/cron/reminders" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             --fail
