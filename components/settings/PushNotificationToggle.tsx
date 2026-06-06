@@ -24,9 +24,9 @@ export default function PushNotificationToggle() {
         await subscribe();
         toast.success("Successfully subscribed to push notifications!");
       }
-    } catch (err: any) {
-      
-      toast.error(err.message || "An error occurred updating subscription.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "An error occurred updating subscription.";
+      toast.error(message);
     }
   };
 
@@ -72,7 +72,7 @@ export default function PushNotificationToggle() {
           aria-label="Toggle push notifications"
         >
           <span
-            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out flex items-center justify-center ${
+            className={`pointer-events-none h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out flex items-center justify-center ${
               isSubscribed ? "translate-x-5" : "translate-x-0"
             }`}
           >
