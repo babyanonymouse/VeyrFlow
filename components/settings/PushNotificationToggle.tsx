@@ -25,6 +25,7 @@ export default function PushNotificationToggle() {
         toast.success("Successfully subscribed to push notifications!");
       }
     } catch (err: any) {
+      
       toast.error(err.message || "An error occurred updating subscription.");
     }
   };
