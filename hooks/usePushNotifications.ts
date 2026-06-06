@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { subscribeToPushNotifications, unsubscribeFromPushNotifications } from "@/lib/webPush";
 
 export function usePushNotifications() {
