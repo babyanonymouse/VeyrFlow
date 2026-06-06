@@ -35,7 +35,7 @@ export async function subscribeToPushNotifications(): Promise<PushSubscription |
   if (!subscription) {
     subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: convertedVapidKey as any,
+      applicationServerKey: convertedVapidKey as unknown as BufferSource,
     });
   }
 

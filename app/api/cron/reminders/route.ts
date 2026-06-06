@@ -43,9 +43,10 @@ export async function GET(request: NextRequest) {
             body: "Time to check your habits!",
           })
         );
-      } catch (error: any) {
+      } catch (error) {
         // Prune expired or invalid subscriptions
-        if (error.statusCode === 410 || error.statusCode === 404) {
+        const err = error as { statusCode?: number };
+        if (err && (err.statusCode === 410 || err.statusCode === 404)) {
           await PushSubscription.deleteOne({ _id: sub._id });
           console.log(`Pruned inactive subscription: ${sub.endpoint}`);
         } else {
@@ -57,7 +58,8 @@ export async function GET(request: NextRequest) {
     await Promise.allSettled(sendPromises);
 
     return NextResponse.json({ success: true, dispatchedCount: subscriptions.length });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
