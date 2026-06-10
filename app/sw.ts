@@ -85,13 +85,12 @@ self.addEventListener("push", (event) => {
   // FIX 3: Extract deep link URL from payload
   const url = data.url || "/";
 
-  // FIX 1: Ensure icons match the actual public folder assets.
-  // NOTE: Change "/icon1.png" to whatever your actual manifest 192x192 icon is named.
+  // FIX 1: Ensure icons match the actual manifest assets.
   event.waitUntil(
     self.registration.showNotification(title, {
       body,
-      icon: "/icon1.png",
-      badge: "/icon1.png",
+      icon: "/icon1",
+      badge: "/icon1",
       data: { url }, // Pass URL to the click handler
     })
   );
@@ -102,18 +101,19 @@ self.addEventListener("notificationclick", (event) => {
 
   // FIX 3: Respect the deep link URL
   const targetUrl = event.notification.data?.url || "/";
+  const resolvedTargetUrl = new URL(targetUrl, self.location.origin).href;
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       // Check if the app is already open to the target URL
       for (const client of clientList) {
-        if (client.url === new URL(targetUrl, self.location.origin).href && "focus" in client) {
+        if (client.url === resolvedTargetUrl && "focus" in client) {
           return client.focus();
         }
       }
       // If not open, launch a new window to the target URL
       if (self.clients.openWindow) {
-        return self.clients.openWindow(targetUrl);
+        return self.clients.openWindow(resolvedTargetUrl);
       }
     })
   );
