@@ -73,7 +73,7 @@ self.addEventListener("push", (event) => {
       data = event.data.json();
     }
   } catch (err) {
-    console.warn("Failed to parse push payload as JSON", err);
+    console.warn("Failed to parse push payload as JSON, falling back to default notification", err);
     // Fallback if payload is just a raw string
     data = {
       title: "VeyrFlow",
@@ -102,28 +102,30 @@ self.addEventListener("notificationclick", (event) => {
 
   // FIX 3: Respect the deep link URL
   const targetUrl = event.notification.data?.url || "/";
-  let resolvedTargetUrl = new URL("/", self.location.origin).href;
+  let safeTargetUrl = new URL("/", self.location.origin).href;
   try {
     const candidateUrl = new URL(targetUrl, self.location.origin);
     if (
       (candidateUrl.protocol === "http:" || candidateUrl.protocol === "https:") &&
       candidateUrl.origin === self.location.origin
     ) {
-      resolvedTargetUrl = candidateUrl.href;
+      safeTargetUrl = candidateUrl.href;
     }
-  } catch (_err) {}
+  } catch (_err) {
+    console.warn("Invalid notification URL, using default:", targetUrl);
+  }
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       // Check if the app is already open to the target URL
       for (const client of clientList) {
-        if (client.url === resolvedTargetUrl && "focus" in client) {
+        if (client.url === safeTargetUrl && "focus" in client) {
           return client.focus();
         }
       }
       // If not open, launch a new window to the target URL
       if (self.clients.openWindow) {
-        return self.clients.openWindow(resolvedTargetUrl);
+        return self.clients.openWindow(safeTargetUrl);
       }
     })
   );
