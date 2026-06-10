@@ -72,7 +72,8 @@ self.addEventListener("push", (event) => {
     if (event.data) {
       data = event.data.json();
     }
-  } catch (_err) {
+  } catch (err) {
+    console.warn("Failed to parse push payload as JSON", err);
     // Fallback if payload is just a raw string
     data = {
       title: "VeyrFlow",
@@ -101,7 +102,16 @@ self.addEventListener("notificationclick", (event) => {
 
   // FIX 3: Respect the deep link URL
   const targetUrl = event.notification.data?.url || "/";
-  const resolvedTargetUrl = new URL(targetUrl, self.location.origin).href;
+  let resolvedTargetUrl = new URL("/", self.location.origin).href;
+  try {
+    const candidateUrl = new URL(targetUrl, self.location.origin);
+    if (
+      (candidateUrl.protocol === "http:" || candidateUrl.protocol === "https:") &&
+      candidateUrl.origin === self.location.origin
+    ) {
+      resolvedTargetUrl = candidateUrl.href;
+    }
+  } catch (_err) {}
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
