@@ -74,10 +74,16 @@ self.addEventListener("push", (event) => {
     }
   } catch (err) {
     console.warn("Failed to parse push payload as JSON, falling back to default notification", err);
+    let fallbackBody = "You have a new reminder.";
+    if (event.data) {
+      try {
+        fallbackBody = event.data.text() || fallbackBody;
+      } catch (_textErr) {}
+    }
     // Fallback if payload is just a raw string
     data = {
       title: "VeyrFlow",
-      body: event.data?.text() || "You have a new reminder.",
+      body: fallbackBody,
     };
   }
 
