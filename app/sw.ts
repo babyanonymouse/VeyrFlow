@@ -65,32 +65,55 @@ const serwist = new Serwist({
 serwist.addEventListeners();
 
 self.addEventListener("push", (event) => {
-  const data = event.data?.json() ?? {};
+  let data: { title?: string; body?: string; url?: string } = {};
+
+  // FIX 2: Defensive parsing (prevent .json() crash)
+  try {
+    if (event.data) {
+      data = event.data.json();
+    }
+  } catch (_err) {
+    // Fallback if payload is just a raw string
+    data = {
+      title: "VeyrFlow",
+      body: event.data?.text() || "You have a new reminder.",
+    };
+  }
+
   const title = data.title || "VeyrFlow";
-  const body = data.body || "New notification";
-  
+  const body = data.body || "Check your habits!";
+  // FIX 3: Extract deep link URL from payload
+  const url = data.url || "/";
+
+  // FIX 1: Ensure icons match the actual public folder assets.
+  // NOTE: Change "/icon1.png" to whatever your actual manifest 192x192 icon is named.
   event.waitUntil(
     self.registration.showNotification(title, {
       body,
-      icon: "/icon-192x192.png",
-      badge: "/icon-192x192.png",
+      icon: "/icon1.png",
+      badge: "/icon1.png",
+      data: { url }, // Pass URL to the click handler
     })
   );
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  
+
+  // FIX 3: Respect the deep link URL
+  const targetUrl = event.notification.data?.url || "/";
+
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-      if (clientList.length > 0) {
-        let client = clientList.find((c) => "focus" in c) || clientList[0];
-        if (client && "focus" in client) {
+      // Check if the app is already open to the target URL
+      for (const client of clientList) {
+        if (client.url === new URL(targetUrl, self.location.origin).href && "focus" in client) {
           return client.focus();
         }
       }
+      // If not open, launch a new window to the target URL
       if (self.clients.openWindow) {
-        return self.clients.openWindow("/");
+        return self.clients.openWindow(targetUrl);
       }
     })
   );
