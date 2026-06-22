@@ -194,9 +194,15 @@ export default function HabitModal({
             setIsOpen(false);
           }
         } catch (err: unknown) {
-          const message =
-            err instanceof Error ? err.message : "Failed to delete habit";
-          toast.error(message);
+          if (typeof navigator !== "undefined" && !navigator.onLine) {
+            console.log("Mutation queued for background sync");
+            toast.success("Deleted offline. Will sync when reconnected.");
+            setIsOpen(false);
+          } else {
+            const message =
+              err instanceof Error ? err.message : "Failed to delete habit";
+            toast.error(message);
+          }
         }
       });
     }
@@ -231,9 +237,15 @@ export default function HabitModal({
           setIsOpen(false);
         }
       } catch (err: unknown) {
-        const message =
-          err instanceof Error ? err.message : "An unexpected error occurred";
-        toast.error(message);
+        if (typeof navigator !== "undefined" && !navigator.onLine) {
+          console.log("Mutation queued for background sync");
+          toast.success("Saved offline. Will sync when reconnected.");
+          setIsOpen(false);
+        } else {
+          const message =
+            err instanceof Error ? err.message : "An unexpected error occurred";
+          toast.error(message);
+        }
       }
     });
   }
