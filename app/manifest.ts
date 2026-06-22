@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "VeyrFlow",
     short_name: "VeyrFlow",
     description: "AI-crafted routines, not just habits.",
-    start_url: "/",
+    start_url: "/dashboard",
     display: "standalone",
     background_color: "#09090b",
     theme_color: "#09090b",
