@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Metadata } from "next";
-import { Sparkles, CheckCircle2, Shield, ArrowRight, Lock, Droplet, Zap, Brain, Activity } from "lucide-react";
+import { Sparkles, CheckCircle2, Shield, ArrowRight, Lock, Droplet, Zap, Brain } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 
 export const metadata: Metadata = {
@@ -12,14 +12,14 @@ export const metadata: Metadata = {
     title: "VeyrFlow | Build Better Habits",
     description: "VeyrFlow helps you build consistency, track your progress, and take control of your daily routines.",
     type: "website",
-    url: "https://habit-flow-pink.vercel.app/",
+    url: "https://veyrflow.vercel.app/",
     siteName: "VeyrFlow",
   },
 };
 
 export default async function LandingPage() {
   const { userId } = await auth();
-  
+
   // "Zero-Drag" Redirect to Dashboard immediately
   if (userId) {
     redirect("/dashboard");
@@ -40,8 +40,8 @@ export default async function LandingPage() {
           <Link href="/sign-in" className="text-zinc-400 hover:text-white transition-colors">
             Log In
           </Link>
-          <Link 
-            href="/sign-up" 
+          <Link
+            href="/sign-up"
             className="rounded-full bg-white text-black px-4 py-2 hover:bg-zinc-200 transition-colors"
           >
             Sign Up
@@ -56,7 +56,7 @@ export default async function LandingPage() {
         <div className="absolute top-1/2 left-1/2 translate-x-1/4 -translate-y-1/4 w-62.5 h-62.5 sm:w-100 sm:h-100 bg-teal-600/15 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="relative mx-auto max-w-4xl text-center z-10 flex flex-col items-center">
-          
+
           {/* Version 2.0 Pulse Badge */}
           <div className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/20 mb-8 backdrop-blur-sm">
             <span className="relative flex w-2 h-2">
@@ -75,7 +75,7 @@ export default async function LandingPage() {
             their daily routines.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-            <Link 
+            <Link
               href="/sign-up"
               className="group flex items-center justify-center gap-2 rounded-lg bg-linear-to-r from-indigo-600 to-teal-500 hover:from-indigo-500 hover:to-teal-400 text-white px-10 py-4 text-sm font-bold uppercase tracking-wider transition-all shadow-[0_0_40px_-10px_rgba(45,212,191,0.5)] w-full sm:w-auto"
             >
@@ -96,7 +96,7 @@ export default async function LandingPage() {
           <div className="rounded-xl ring-1 ring-white/10 bg-zinc-950/90 backdrop-blur-2xl shadow-2xl shadow-teal-500/10 overflow-hidden flex transform transition-transform duration-700 ease-out hover:rotate-x-2 hover:-rotate-y-1 hover:scale-[1.01] origin-bottom h-112.5 group">
             {/* Sidebar Mockup */}
             <div className="flex flex-col w-64 border-r border-white/5 bg-zinc-900/40 p-5 shrink-0">
-               <div className="flex items-center gap-3 mb-10 px-2 mt-2">
+              <div className="flex items-center gap-3 mb-10 px-2 mt-2">
                 <div className="w-7 h-7 rounded bg-linear-to-tr from-indigo-500 to-teal-500 shadow-inner" />
                 <div className="h-4 w-24 bg-zinc-800 rounded" />
               </div>
@@ -115,68 +115,68 @@ export default async function LandingPage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Main Content Mockup */}
             <div className="flex-1 p-10 relative bg-linear-to-br from-zinc-900/10 to-zinc-950 overflow-hidden">
-               <div className="flex items-center justify-between mb-10">
+              <div className="flex items-center justify-between mb-10">
                 <div className="flex flex-col gap-2">
-                   <div className="h-4 w-24 bg-zinc-800/50 rounded" />
-                   <div className="h-8 w-48 bg-white/10 rounded-lg" />
+                  <div className="h-4 w-24 bg-zinc-800/50 rounded" />
+                  <div className="h-8 w-48 bg-white/10 rounded-lg" />
                 </div>
                 <div className="flex gap-2">
-                   <div className="h-10 w-10 bg-white/5 rounded-full" />
-                   <div className="h-10 w-10 bg-white/5 rounded-full" />
+                  <div className="h-10 w-10 bg-white/5 rounded-full" />
+                  <div className="h-10 w-10 bg-white/5 rounded-full" />
                 </div>
               </div>
-              
+
               {/* Dynamic Action Cards (From Stitch Mockup) */}
               <div className="grid grid-cols-3 gap-6">
-                 {/* Hydration */}
-                 <div className="p-6 rounded-xl bg-zinc-900/50 border border-white/5 hover:border-sky-500/30 transition-colors">
-                    <div className="flex justify-between items-start mb-6">
-                       <Droplet className="w-6 h-6 text-sky-400" />
-                       <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest">Hydration</span>
-                    </div>
-                    <div className="text-3xl font-bold text-white mb-4">2.4L</div>
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                       <div className="h-full bg-sky-400 w-3/4 rounded-full" />
-                    </div>
-                 </div>
+                {/* Hydration */}
+                <div className="p-6 rounded-xl bg-zinc-900/50 border border-white/5 hover:border-sky-500/30 transition-colors">
+                  <div className="flex justify-between items-start mb-6">
+                    <Droplet className="w-6 h-6 text-sky-400" />
+                    <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest">Hydration</span>
+                  </div>
+                  <div className="text-3xl font-bold text-white mb-4">2.4L</div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-sky-400 w-3/4 rounded-full" />
+                  </div>
+                </div>
 
-                 {/* Deep Work */}
-                 <div className="p-6 rounded-xl bg-zinc-900/50 border border-white/5 hover:border-amber-500/30 transition-colors">
-                    <div className="flex justify-between items-start mb-6">
-                       <Zap className="w-6 h-6 text-amber-400" />
-                       <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Deep Work</span>
-                    </div>
-                    <div className="text-3xl font-bold text-white mb-4">4.5h</div>
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                       <div className="h-full bg-amber-400 w-1/2 rounded-full" />
-                    </div>
-                 </div>
+                {/* Deep Work */}
+                <div className="p-6 rounded-xl bg-zinc-900/50 border border-white/5 hover:border-amber-500/30 transition-colors">
+                  <div className="flex justify-between items-start mb-6">
+                    <Zap className="w-6 h-6 text-amber-400" />
+                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Deep Work</span>
+                  </div>
+                  <div className="text-3xl font-bold text-white mb-4">4.5h</div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-400 w-1/2 rounded-full" />
+                  </div>
+                </div>
 
-                 {/* Meditation */}
-                 <div className="p-6 rounded-xl bg-zinc-900/50 border border-white/5 hover:border-purple-500/30 transition-colors">
-                    <div className="flex justify-between items-start mb-6">
-                       <Brain className="w-6 h-6 text-purple-400" />
-                       <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Meditation</span>
-                    </div>
-                    <div className="text-3xl font-bold text-white mb-4">20m</div>
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                       <div className="h-full bg-purple-400 w-full rounded-full" />
-                    </div>
-                 </div>
+                {/* Meditation */}
+                <div className="p-6 rounded-xl bg-zinc-900/50 border border-white/5 hover:border-purple-500/30 transition-colors">
+                  <div className="flex justify-between items-start mb-6">
+                    <Brain className="w-6 h-6 text-purple-400" />
+                    <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Meditation</span>
+                  </div>
+                  <div className="text-3xl font-bold text-white mb-4">20m</div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-purple-400 w-full rounded-full" />
+                  </div>
+                </div>
               </div>
 
-               {/* Trailing UI elements placeholder to fill vertical space */}
-               <div className="mt-8 flex gap-4 opacity-50">
-                 <div className="h-12 flex-1 bg-white/5 rounded-lg border border-white/5" />
-                 <div className="h-12 flex-1 bg-white/5 rounded-lg border border-white/5" />
-                 <div className="h-12 flex-1 bg-white/5 rounded-lg border border-white/5" />
-               </div>
+              {/* Trailing UI elements placeholder to fill vertical space */}
+              <div className="mt-8 flex gap-4 opacity-50">
+                <div className="h-12 flex-1 bg-white/5 rounded-lg border border-white/5" />
+                <div className="h-12 flex-1 bg-white/5 rounded-lg border border-white/5" />
+                <div className="h-12 flex-1 bg-white/5 rounded-lg border border-white/5" />
+              </div>
             </div>
           </div>
-          
+
           {/* Overlay gradient to fade out bottom cleanly */}
           <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-zinc-950 to-transparent pointer-events-none" />
         </div>
@@ -242,7 +242,7 @@ export default async function LandingPage() {
               </Link>
             </div>
           </div>
-          
+
           <div className="md:col-span-4 bg-linear-to-br from-indigo-500/20 to-teal-500/25 border border-teal-500/30 rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden shadow-inner">
             <Logo size={40} id="landing-card" className="mb-2" />
             <div className="text-4xl sm:text-5xl font-black text-white tracking-tighter">
@@ -258,9 +258,9 @@ export default async function LandingPage() {
       {/* Expanded Trust Footer */}
       <footer className="border-t border-zinc-800/50 py-12 px-6 text-center text-sm text-zinc-500">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          
+
           <span className="font-bold text-lg text-white">VeyrFlow</span>
-          
+
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
             <Link href="/docs" className="font-medium text-xs tracking-widest uppercase text-zinc-400 hover:text-teal-400 transition-colors">Docs</Link>
             <Link href="#" className="font-medium text-xs tracking-widest uppercase text-zinc-400 hover:text-teal-400 transition-colors">Privacy</Link>
