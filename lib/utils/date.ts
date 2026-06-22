@@ -29,7 +29,7 @@ export function calculateStreak(completedDates: string[], todayStr: string): num
   const sorted = [...new Set(completedDates)].sort((a, b) => a.localeCompare(b));
   
   let currentStreak = 0;
-  let lastCheckedDate = "";
+  // let lastCheckedDate = "";
 
   // The logic: iterate backwards from the latest date.
   // If the latest date is TODAY or YESTERDAY, the streak is alive.
