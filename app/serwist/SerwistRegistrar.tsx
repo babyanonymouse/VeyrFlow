@@ -10,7 +10,7 @@ export default function SerwistRegistrar({
   return (
     <SerwistProvider
       swUrl="/serwist/sw.js"
-      disable={process.env.NODE_ENV === "development"}
+      options={{ scope: "/" }}
     >
       {children}
     </SerwistProvider>

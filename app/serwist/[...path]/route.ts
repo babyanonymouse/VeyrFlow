@@ -25,7 +25,19 @@ export async function GET(
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   const { path } = await params;
-  return handler.GET(req, {
+  const res = await handler.GET(req, {
     params: Promise.resolve({ path: path.join("/") }),
+  });
+  
+  // Create a new response to append the Service-Worker-Allowed header
+  // This is required to allow the service worker to control the root scope "/"
+  // when it is served from "/serwist/sw.js".
+  const headers = new Headers(res.headers);
+  headers.set("Service-Worker-Allowed", "/");
+  
+  return new Response(res.body, {
+    status: res.status,
+    statusText: res.statusText,
+    headers,
   });
 }

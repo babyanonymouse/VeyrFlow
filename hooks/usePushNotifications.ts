@@ -19,9 +19,8 @@ export function usePushNotifications() {
       let subscribed = false;
       let perm: NotificationPermission = "default";
 
-      // If in development, the Service Worker is disabled by default in SerwistRegistrar.tsx
-      // We skip awaiting the ready promise to prevent hanging the hook in loading state.
-      if (supported && !isDev) {
+      // We now allow testing Service Worker in development.
+      if (supported) {
         perm = Notification.permission;
         try {
           const registration = await navigator.serviceWorker.ready;
@@ -33,8 +32,7 @@ export function usePushNotifications() {
       }
 
       if (active) {
-        // We set supported to false in dev to show the disabled/unsupported state gracefully
-        setIsSupported(supported && !isDev);
+        setIsSupported(supported);
         setPermission(perm);
         setIsSubscribed(subscribed);
         setLoading(false);
