@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: "VeyrFlow | Build Better Habits",
     description: "VeyrFlow helps you build consistency, track your progress, and take control of your daily routines.",
     type: "website",
-    url: "https://habit-flow-pink.vercel.app/",
+    url: "https://veyrflow.vercel.app/",
     siteName: "VeyrFlow",
   },
 };
